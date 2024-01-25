@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Memories extends StatefulWidget {
-  const Memories({super.key});
+class MemoriesScreen extends StatefulWidget {
+  const MemoriesScreen({super.key});
   @override
-  MemoriesState createState() => MemoriesState();
+  MemoriesScreenState createState() => MemoriesScreenState();
 }
 
-class MemoriesState extends State<Memories> {
+class MemoriesScreenState extends State<MemoriesScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(

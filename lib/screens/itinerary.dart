@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Itinerary extends StatefulWidget {
+class ItineraryScreen extends StatefulWidget {
+  const ItineraryScreen({super.key});
   @override
-  ItineraryState createState() => ItineraryState();
+  ItineraryScreenState createState() => ItineraryScreenState();
 }
 
-class ItineraryState extends State<Itinerary> {
+class ItineraryScreenState extends State<ItineraryScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(

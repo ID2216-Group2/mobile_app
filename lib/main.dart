@@ -44,13 +44,14 @@ class Destination {
 }
 
 List<Destination> screens = [
-  Destination(DestinationNames.home, DestinationIcons.home, Home()),
+  Destination(DestinationNames.home, DestinationIcons.home, HomeScreen()),
   Destination(DestinationNames.expenditure, DestinationIcons.expenditure,
-      Expenditure()),
-  Destination(DestinationNames.memories, DestinationIcons.memories, Memories()),
+      ExpenditureScreen()),
   Destination(
-      DestinationNames.itinerary, DestinationIcons.itinerary, Itinerary()),
-  Destination(DestinationNames.saved, DestinationIcons.saved, Saved()),
+      DestinationNames.memories, DestinationIcons.memories, MemoriesScreen()),
+  Destination(DestinationNames.itinerary, DestinationIcons.itinerary,
+      ItineraryScreen()),
+  Destination(DestinationNames.saved, DestinationIcons.saved, SavedScreen()),
 ];
 
 class _MainPageState extends State<MainPage> {
@@ -69,7 +70,7 @@ class _MainPageState extends State<MainPage> {
         // Here we take the value from the MyHomePage object that
         // was created by the App.build method, and use it to set
         // our appbar title.
-        backgroundColor: Color(Colours.SECONDARY),
+        backgroundColor: const Color(Colours.SECONDARY),
         centerTitle: true,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -102,7 +103,7 @@ class _MainPageState extends State<MainPage> {
       // ),
       body: Center(child: screens[currentPageIndex].widget),
       bottomNavigationBar: NavigationBar(
-          backgroundColor: Color(Colours.SECONDARY),
+          backgroundColor: const Color(Colours.SECONDARY),
           labelBehavior: labelBehavior,
           selectedIndex: currentPageIndex,
           onDestinationSelected: (int index) {
