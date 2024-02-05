@@ -4,6 +4,7 @@ import 'screens/memories.dart';
 import 'screens/itinerary.dart';
 import 'screens/saved.dart';
 import 'screens/home.dart';
+import 'screens/signup.dart';
 import 'constants/destinations.dart';
 import 'constants/colours.dart';
 
