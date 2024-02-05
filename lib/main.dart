@@ -45,6 +45,7 @@ class Destination {
 }
 
 List<Destination> screens = [
+  Destination(DestinationNames.signup, DestinationIcons.signup, Signup()),
   Destination(DestinationNames.home, DestinationIcons.home, HomeScreen()),
   Destination(DestinationNames.expenditure, DestinationIcons.expenditure,
       ExpenditureScreen()),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DestinationNames {
+  static const String signup = "Signup";
   static const String home = "Home";
   static const String expenditure = "Expenditure";
   static const String memories = "Memories";
@@ -9,6 +10,7 @@ class DestinationNames {
 }
 
 class DestinationIcons {
+  static const Icon signup = Icon(Icons.login);
   static const Icon home = Icon(Icons.home);
   static const Icon expenditure = Icon(Icons.monetization_on);
   static const Icon memories = Icon(Icons.image);

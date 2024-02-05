@@ -50,7 +50,7 @@ class LoginAndSignupBtn extends StatelessWidget {
           ),
           child: Text(
             "Sign Up NOW!".toUpperCase(),
-            style: const TextStyle(color: Colors.black),
+            style: const TextStyle(color: Colors.white),
           ),
         ),
       ],

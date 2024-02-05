@@ -22,7 +22,7 @@ class WelcomeImage extends StatelessWidget {
             Expanded(
               flex: 8,
               child: Image.asset(
-                "assets/icons/chat.svg",
+                "assets/images/theme.png",
               ),
             ),
             const Spacer(),
