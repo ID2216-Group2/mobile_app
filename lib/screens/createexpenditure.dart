@@ -49,6 +49,7 @@ class CreateExpenditureState extends State<CreateExpenditure> {
               Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: TextField(
+                  textCapitalization: TextCapitalization.sentences,
                   controller: dateController,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
@@ -67,6 +68,7 @@ class CreateExpenditureState extends State<CreateExpenditure> {
                   padding: const EdgeInsets.all(15.0),
                   child: SizedBox(
                       child: TextField(
+                    textCapitalization: TextCapitalization.sentences,
                     controller: amountController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),

@@ -1,4 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:test_app/classes/memory.dart';
+import 'package:test_app/components/memorytile.dart';
+import 'package:test_app/screens/creatememory.dart';
+import 'package:test_app/sampledata/people.dart';
+import 'package:test_app/constants/colours.dart';
+
+const currentUser = SamplePeople.muthu;
+
+const sampleGroup = [SamplePeople.muthu, SamplePeople.ali, SamplePeople.bob];
 
 class MemoriesScreen extends StatefulWidget {
   const MemoriesScreen({super.key});
@@ -7,17 +16,151 @@ class MemoriesScreen extends StatefulWidget {
 }
 
 class MemoriesScreenState extends State<MemoriesScreen> {
+  List<Memory> data = [
+    const Memory(
+        date: "2024-01-24",
+        mainImage: "placeholder.png",
+        location: "Singapore, China",
+        title: "Eating",
+        images: ["placeholder.png"],
+        comments: "Very good food",
+        creator: SamplePeople.ali,
+        people: [SamplePeople.ali, SamplePeople.bob]),
+    const Memory(
+        date: "2024-01-03",
+        mainImage: "placeholder.png",
+        location: "Singapore, China",
+        title: "Eating",
+        images: ["placeholder.png"],
+        comments: "Very good food",
+        creator: SamplePeople.ali,
+        people: [SamplePeople.ali, SamplePeople.bob]),
+    const Memory(
+        date: "2024-01-20",
+        mainImage: "placeholder.png",
+        location: "Singapore, China",
+        title: "Eating",
+        images: ["placeholder.png"],
+        comments: "Very good food",
+        creator: SamplePeople.ali,
+        people: [SamplePeople.ali, SamplePeople.bob]),
+    const Memory(
+        date: "2023-12-24",
+        mainImage: "placeholder.png",
+        location: "Singapore, China",
+        title: "Sleeping",
+        images: ["placeholder.png"],
+        comments: "Very good sleep",
+        creator: SamplePeople.ali,
+        people: [SamplePeople.ali, SamplePeople.bob]),
+    const Memory(
+        date: "2023-12-10",
+        mainImage: "placeholder.png",
+        location: "Singapore, China",
+        title: "Sleeping",
+        images: ["placeholder.png"],
+        comments: "Very good sleep",
+        creator: SamplePeople.ali,
+        people: [SamplePeople.ali, SamplePeople.bob]),
+    const Memory(
+        date: "2023-11-24",
+        mainImage: "placeholder.png",
+        location: "Singapore, China",
+        title: "Sleeping",
+        images: ["placeholder.png"],
+        comments: "Very good sleep",
+        creator: SamplePeople.ali,
+        people: [SamplePeople.ali, SamplePeople.bob]),
+  ];
+  int _calculateCrossAxisCount(BuildContext context) {
+    // You can adjust these values according to your needs
+    double width = MediaQuery.of(context).size.width;
+    if (width > 400) {
+      return 3; // for larger screens
+    } else if (width > 300) {
+      return 2; // for medium screens
+    } else {
+      return 1; // for smaller screens
+    }
+  }
+
+  Map<String, List<Memory>> get _groupedData {
+    Map<String, List<Memory>> groupedData = {};
+    for (var memory in data) {
+      String groupKey =
+          '${memory.date.split("-")[0]}-${memory.date.split("-")[1]}';
+      if (!groupedData.containsKey(groupKey)) {
+        groupedData[groupKey] = [];
+      }
+      groupedData[groupKey]!.add(memory);
+    }
+    return groupedData;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text('Memories'),
-          SizedBox(height: 10),
-        ],
-      )),
-    );
+    return Scaffold(
+        body: ListView.builder(
+          itemCount: _groupedData.length,
+          itemBuilder: (context, index) {
+            String group = _groupedData.keys.elementAt(index);
+            List<Memory> memories = _groupedData[group]!;
+
+            return Padding(
+              padding: index == _groupedData.length - 1
+                  ? EdgeInsets.only(bottom: 50.0)
+                  : EdgeInsets.zero,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Text(
+                      group,
+                      textAlign: TextAlign.left,
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+                    ),
+                  ),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: _calculateCrossAxisCount(context),
+                      crossAxisSpacing: 4,
+                      mainAxisSpacing: 4,
+                    ),
+                    itemCount: memories.length,
+                    itemBuilder: (context, gridIndex) {
+                      return MemoryTile(memory: memories[gridIndex]);
+                    },
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          elevation: 12.0,
+          backgroundColor: const Color(Colours.PRIMARY),
+          onPressed: () async {
+            final Memory? result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const CreateMemory(
+                        group: sampleGroup,
+                        creator: SamplePeople.muthu,
+                      )),
+            );
+            if (result != null) {
+              setState(() => data.add(result));
+            } else {
+              print("NO");
+            }
+          },
+          icon: const Icon(Icons.photo, color: Color(Colours.WHITECONTRAST)),
+          label: const Text("Add Memory",
+              style: TextStyle(color: Color(Colours.WHITECONTRAST))),
+        ));
   }
 }
