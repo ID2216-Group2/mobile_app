@@ -19,22 +19,22 @@ class ExpenditureScreen extends StatefulWidget {
 }
 
 class ExpenditureScreenState extends State<ExpenditureScreen> {
-  List<Expenditure> sampleData = [
-    Expenditure(
+  List<Expenditure> data = [
+    const Expenditure(
         date: "2024-01-24",
         category: CategoryName.food,
         icon: CategoryIcon.food,
         amount: 50.20,
         people: [SamplePeople.ali, SamplePeople.bob, SamplePeople.muthu],
         creator: SamplePeople.muthu),
-    Expenditure(
+    const Expenditure(
         date: "2024-01-10",
         category: CategoryName.leisure,
         icon: CategoryIcon.leisure,
         amount: 23.20,
         people: [SamplePeople.bob, SamplePeople.muthu],
         creator: SamplePeople.muthu),
-    Expenditure(
+    const Expenditure(
         date: "2023-12-12",
         category: CategoryName.food,
         icon: CategoryIcon.food,
@@ -47,7 +47,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
   @override
   Widget build(BuildContext context) {
     groupedData = {};
-    for (var entry in sampleData) {
+    for (var entry in data) {
       DateTime date = DateTime.parse(entry.date);
       String yearMonth = DateFormat('yyyy-MM').format(date);
 
@@ -81,7 +81,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
                       )),
             );
             if (result != null) {
-              setState(() => sampleData.add(result));
+              setState(() => data.add(result));
               print(result.date);
               print(result.category);
               print(result.amount);
