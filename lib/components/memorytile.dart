@@ -11,7 +11,7 @@ Future<Uint8List?> getDownloadURL(key) => storageRef.child(key).getData();
 
 class MemoryTile extends StatelessWidget {
   const MemoryTile(
-      {super.key, this.memory = const Memory(), this.fontSize = 12});
+      {super.key, this.memory = const Memory(group: ""), this.fontSize = 12});
   final Memory memory;
   final double fontSize;
 

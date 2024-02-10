@@ -9,6 +9,7 @@ import 'package:test_app/components/imagepickercard.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:test_app/utility/globals.dart';
 
 class CreateMemoryState extends State<CreateMemory> {
   DateTime selectedDate = DateTime.now();
@@ -137,7 +138,7 @@ class CreateMemoryState extends State<CreateMemory> {
                           },
                           options: widget.group
                               .map((item) =>
-                                  ValueItem(label: item.firstName, value: item))
+                                  ValueItem(label: item.name, value: item))
                               .toList(),
                           maxItems: 4,
                           selectionType: SelectionType.multi,
@@ -205,6 +206,7 @@ class CreateMemoryState extends State<CreateMemory> {
             Navigator.pop(
                 context,
                 Memory(
+                  group: globalGroup,
                   date: "${selectedDate.toLocal()}".split(' ')[0],
                   mainImage:
                       imgList.isNotEmpty ? imgList[0] : "placeholder.png",
@@ -212,8 +214,8 @@ class CreateMemoryState extends State<CreateMemory> {
                   location: locationController.text,
                   title: nameController.text,
                   comments: commentsController.text,
-                  people: persons,
-                  creator: widget.creator,
+                  people: persons.map((person) => person.id).toList(),
+                  creator: globalUser,
                 ));
           },
           // icon: const Icon(Icons.edit, color: Color(Colours.WHITECONTRAST)),

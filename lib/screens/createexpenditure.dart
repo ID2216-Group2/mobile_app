@@ -5,6 +5,7 @@ import 'package:test_app/classes/people.dart';
 import 'package:test_app/constants/colours.dart';
 import 'package:test_app/constants/categories.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
+import 'package:test_app/utility/globals.dart';
 
 class CreateExpenditureState extends State<CreateExpenditure> {
   DateTime selectedDate = DateTime.now();
@@ -123,7 +124,7 @@ class CreateExpenditureState extends State<CreateExpenditure> {
                       },
                       options: widget.group
                           .map((item) =>
-                              ValueItem(label: item.firstName, value: item))
+                              ValueItem(label: item.name, value: item))
                           .toList(),
                       maxItems: 4,
                       selectionType: SelectionType.multi,
@@ -163,8 +164,11 @@ class CreateExpenditureState extends State<CreateExpenditure> {
                     amount: double.parse(amountController.text),
                     icon: CategoryIcon.categoryNameToIconMap[selectedCategory]
                         as Icon,
-                    people: persons,
-                    creator: widget.creator));
+                    people: persons.map((person) {
+                      return person.id;
+                    }).toList(),
+                    creator: globalUser,
+                    group: globalGroup));
           },
           // icon: const Icon(Icons.edit, color: Color(Colours.WHITECONTRAST)),
           label: const Text("Add Expenditure",
@@ -180,7 +184,7 @@ class CreateExpenditure extends StatefulWidget {
   const CreateExpenditure(
       {super.key, required this.group, required this.creator});
   final List<Person> group;
-  final Person creator;
+  final String creator;
   @override
   State<CreateExpenditure> createState() => CreateExpenditureState();
 }

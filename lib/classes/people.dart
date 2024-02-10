@@ -1,13 +1,15 @@
 class Person {
   const Person(
-      {this.firstName = "",
-      this.lastName = "",
-      this.dob = "01011970",
-      this.email = "",
-      this.password = ""});
-  final String firstName;
-  final String lastName;
-  final String dob;
+      {required this.id, this.name = "", this.email = "", this.password = ""});
+  final String id;
+  final String name;
   final String email;
   final String password;
+  factory Person.fromMap(Map<String, dynamic> data) {
+    return Person(
+        id: data["id"],
+        name: data['name'],
+        email: data['email'],
+        password: data['password']);
+  }
 }
