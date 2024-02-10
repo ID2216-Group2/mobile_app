@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:test_app/components/customcard.dart';
 import 'package:test_app/constants/colours.dart';
-import 'package:test_app/constants/categories.dart';
 import 'package:test_app/sampledata/people.dart';
+import 'package:test_app/classes/people.dart';
 import 'package:test_app/classes/expenditure.dart';
 import 'package:test_app/screens/createexpenditure.dart';
 import 'package:test_app/components/expenditureblock.dart';
+import 'package:test_app/utility/firebaseutils.dart';
+import 'package:test_app/utility/globals.dart';
 
 const currentUser = SamplePeople.muthu;
-
-const sampleGroup = [SamplePeople.muthu, SamplePeople.ali, SamplePeople.bob];
 
 class ExpenditureScreen extends StatefulWidget {
   const ExpenditureScreen({super.key});
@@ -19,35 +19,31 @@ class ExpenditureScreen extends StatefulWidget {
 }
 
 class ExpenditureScreenState extends State<ExpenditureScreen> {
-  List<Expenditure> sampleData = [
-    Expenditure(
-        date: "2024-01-24",
-        category: CategoryName.food,
-        icon: CategoryIcon.food,
-        amount: 50.20,
-        people: [SamplePeople.ali, SamplePeople.bob, SamplePeople.muthu],
-        creator: SamplePeople.muthu),
-    Expenditure(
-        date: "2024-01-10",
-        category: CategoryName.leisure,
-        icon: CategoryIcon.leisure,
-        amount: 23.20,
-        people: [SamplePeople.bob, SamplePeople.muthu],
-        creator: SamplePeople.muthu),
-    Expenditure(
-        date: "2023-12-12",
-        category: CategoryName.food,
-        icon: CategoryIcon.food,
-        amount: 23.20,
-        people: [SamplePeople.bob, SamplePeople.ali],
-        creator: SamplePeople.ali)
-  ];
+  List<Person> group = [];
+  List<Expenditure> expenditures = [];
   Map<String, List<Expenditure>> groupedData = {};
+
+  @override
+  void initState() {
+    super.initState();
+    FirebaseUtils.fetchExpendituresByGroupId(globalGroup)
+        .then((fetchedExpenditures) {
+      print(fetchedExpenditures);
+      setState(() {
+        expenditures = fetchedExpenditures;
+      });
+    });
+    FirebaseUtils.fetchPeopleByGroupId(globalGroup).then((fetchedPeople) {
+      setState(() {
+        group = fetchedPeople;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     groupedData = {};
-    for (var entry in sampleData) {
+    for (var entry in expenditures) {
       DateTime date = DateTime.parse(entry.date);
       String yearMonth = DateFormat('yyyy-MM').format(date);
 
@@ -75,18 +71,29 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
             final Expenditure? result = await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const CreateExpenditure(
-                        group: sampleGroup,
-                        creator: SamplePeople.muthu,
+                  builder: (context) => CreateExpenditure(
+                        group: group,
+                        creator: globalUser,
                       )),
             );
             if (result != null) {
-              setState(() => sampleData.add(result));
-              print(result.date);
-              print(result.category);
-              print(result.amount);
-              print(result.creator);
-              print(result.people);
+              setState(() => expenditures.add(result));
+              FirebaseUtils.uploadData("expenditure", {
+                "date": result.date,
+                "category": result.category,
+                "amount": result.amount,
+                "creator": globalUser,
+                "people": result.people,
+                "group": globalGroup
+              }).then((_) {
+                // Fetch the latest data again after adding a new expenditure
+                FirebaseUtils.fetchExpendituresByGroupId(globalGroup)
+                    .then((fetchedExpenditures) {
+                  setState(() {
+                    expenditures = fetchedExpenditures;
+                  });
+                });
+              });
             } else {
               print("NO");
             }

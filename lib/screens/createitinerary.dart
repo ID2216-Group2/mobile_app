@@ -38,22 +38,19 @@ class CreateItineraryState extends State<CreateItinerary> {
     }
   }
 
-  Future < void > selectTime({required int x}) async {
-    TimeOfDay ? _picked = await showTimePicker(
-      context: context,
-      initialTime: selectedStartTime
-    );
-    if(_picked != null){
+  Future<void> selectTime({required int x}) async {
+    TimeOfDay? _picked =
+        await showTimePicker(context: context, initialTime: selectedStartTime);
+    if (_picked != null) {
       setState(() {
-        if(x==0){
+        if (x == 0) {
           selectedStartTime = _picked;
           startTimeController.value = startTimeController.value.copyWith(
             text: "${selectedStartTime}".split(' ')[0],
             selection: TextSelection.collapsed(
                 offset: "${selectedStartTime}".split(' ')[0].length),
           );
-        }
-        else{
+        } else {
           selectedEndTime = _picked;
           endTimeController.value = endTimeController.value.copyWith(
             text: "${selectedEndTime}".split(' ')[0],
@@ -61,9 +58,8 @@ class CreateItineraryState extends State<CreateItinerary> {
                 offset: "${selectedEndTime}".split(' ')[0].length),
           );
         }
-        
       });
-      
+
       // startTimeController.text = selectedStartTime.format(context);
       // endTimeController.text = selectedEndTime.format(context);
     }
@@ -109,7 +105,7 @@ class CreateItineraryState extends State<CreateItinerary> {
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.access_time_outlined),
                       onPressed: () {
-                        selectTime(x:0);
+                        selectTime(x: 0);
                       },
                     ),
                   ),
@@ -126,7 +122,7 @@ class CreateItineraryState extends State<CreateItinerary> {
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.access_time_outlined),
                       onPressed: () {
-                        selectTime(x:1);
+                        selectTime(x: 1);
                       },
                     ),
                   ),
@@ -168,7 +164,7 @@ class CreateItineraryState extends State<CreateItinerary> {
                       },
                       options: widget.group
                           .map((item) =>
-                              ValueItem(label: item.firstName, value: item))
+                              ValueItem(label: item.name, value: item))
                           .toList(),
                       maxItems: 4,
                       selectionType: SelectionType.multi,
