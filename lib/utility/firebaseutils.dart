@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:test_app/classes/expenditure.dart';
 import 'package:test_app/classes/memory.dart';
 import 'package:test_app/classes/people.dart';
+import 'package:test_app/classes/group.dart';
 
 class FirebaseUtils {
   static Future<void> uploadData(collectionName, data) async {
@@ -127,5 +128,42 @@ class FirebaseUtils {
     }
 
     return people;
+  }
+
+  static Future<Person> fetchUserByUserId(String userId) async {
+    DocumentSnapshot personSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get();
+    Map<String, dynamic> personData =
+        personSnapshot.data() as Map<String, dynamic>;
+    personData['id'] = userId;
+    return Person.fromMap(personData);
+  }
+
+  static Future<List<Group>> fetchGroupsByUserId(String userId) async {
+    List<Group> groups = [];
+
+    QuerySnapshot groupSnapshot = await FirebaseFirestore.instance
+        .collection('group')
+        .where('people', arrayContains: userId)
+        .get();
+          
+    for (QueryDocumentSnapshot groupDoc in groupSnapshot.docs) {
+      Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
+      List<dynamic> peopleIds = groupData['people'];
+      List<Person> people = [];
+      for (String personId in peopleIds) {
+        if (personId == userId) { continue; }
+        Person p = await fetchUserByUserId(personId);
+        people.add(p);
+      }
+      groupData['id'] = groupDoc.id;
+      groupData['name'] = groupData['groupname'];
+      groupData['people'] = people;
+      groups.add(Group.fromMap(groupData));
+    }
+
+    return groups;
   }
 }
