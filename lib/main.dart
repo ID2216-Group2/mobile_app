@@ -5,7 +5,7 @@ import 'screens/itinerary.dart';
 import 'screens/saved.dart';
 import 'screens/home.dart';
 import 'screens/signup.dart';
-import 'components/hamburger.dart';
+import 'screens/SideGroup/hamburger.dart';
 import 'constants/destinations.dart';
 import 'constants/colours.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -106,7 +106,7 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
       
-      drawer: Hamburger(),
+      drawer: SideGroup(),
 
       // appBar: AppBar(
       //   centerTitle: true,
