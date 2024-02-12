@@ -5,6 +5,7 @@ import 'screens/itinerary.dart';
 import 'screens/saved.dart';
 import 'screens/home.dart';
 import 'screens/signup.dart';
+import 'screens/SideGroup/hamburger.dart';
 import 'constants/destinations.dart';
 import 'constants/colours.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -90,10 +91,10 @@ class _MainPageState extends State<MainPage> {
             ),
           ],
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
-        ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.menu),
+        //   onPressed: () {},
+        // ),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.person_2_rounded),
@@ -104,6 +105,8 @@ class _MainPageState extends State<MainPage> {
           // You can add more widgets here
         ],
       ),
+      
+      drawer: SideGroup(),
 
       // appBar: AppBar(
       //   centerTitle: true,
