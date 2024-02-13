@@ -99,15 +99,6 @@ class FirebaseUtils {
     List<Person> people = [];
 
     try {
-      // await FirebaseFirestore.instance
-      //     .collection('group')
-      //     .doc(groupId)
-      //     .get()
-      //     .then((value) {
-      //   print("Hello");
-      //   print(value["people"]);
-      // });
-
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
           .collection('group')
           .doc(groupId)
@@ -141,7 +132,7 @@ class FirebaseUtils {
     return Person.fromMap(personData);
   }
 
-  static Future<List<Group>> fetchGroupsByUserId(String userId) async {
+  static Future<List<Group>> fetchGroupsByUserId(String userId, bool ignore_currentUser) async {
     List<Group> groups = [];
 
     QuerySnapshot groupSnapshot = await FirebaseFirestore.instance
@@ -154,7 +145,7 @@ class FirebaseUtils {
       List<dynamic> peopleIds = groupData['people'];
       List<Person> people = [];
       for (String personId in peopleIds) {
-        if (personId == userId) { continue; }
+        if (ignore_currentUser && personId == userId) { continue; }
         Person p = await fetchUserByUserId(personId);
         people.add(p);
       }
@@ -165,5 +156,66 @@ class FirebaseUtils {
     }
 
     return groups;
+  }
+
+  static Future<List<Person>> fetchOtherUsersByUserId(String userId) async {
+    List<Person> otherUsers = [];
+
+    QuerySnapshot usersSnapshot = await FirebaseFirestore.instance
+      .collection('users')
+      .where(FieldPath.documentId, isNotEqualTo: userId)
+      .get();
+    
+    for (QueryDocumentSnapshot userDoc in usersSnapshot.docs) {
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      Person user = Person(
+        id: userDoc.id,
+        name: userData['name'],
+        // email: userData['email'],
+        // password: userData['password']
+      );
+      otherUsers.add(user);
+    }
+
+    return otherUsers;
+  }
+
+  static Future<List<List<double>>> fetchBillsByGroupId(String groupId) async {
+    DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+      .collection('group')
+      .doc(groupId)
+      .get();
+    Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
+    List<List<double>> bills = Group.decodeBills(groupData['bill']);
+    return bills;
+  }
+
+  static Future<void> updateGroupExpenditure(String groupId, String payeeId, double amount) async {
+    DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+      .collection('group')
+      .doc(groupId)
+      .get();
+    Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
+    List<dynamic> peopleIds = groupData['people'];
+    List<List<double>> bills = Group.decodeBills(groupData['bill']);
+    double amountOwed = amount / peopleIds.length;
+    int payeeIdx = peopleIds.indexOf(payeeId);
+    
+    for (var i = 0; i < peopleIds.length; i++) {
+      if (i == payeeIdx) { continue; }
+      bills[payeeIdx][i] += amountOwed;
+    }
+
+    String billsStr = Group.encodeBills(bills);
+    groupDoc.reference.update({ "bill": billsStr });
+  }
+
+  static Future<void> updateGroupBills(String groupId, List<List<double>> billMatrix) async {
+    DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+      .collection('group')
+      .doc(groupId)
+      .get();
+    String billsStr = Group.encodeBills(billMatrix);
+    groupDoc.reference.update({ "bill": billsStr });
   }
 }
