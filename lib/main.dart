@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/expenditure.dart';
+import 'screens/Expenditure/expenditure.dart';
 import 'screens/memories.dart';
 import 'screens/itinerary.dart';
 import 'screens/saved.dart';
