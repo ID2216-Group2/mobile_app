@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'screens/Expenditure/expenditure.dart';
-import 'screens/Memory/memories.dart';
+import 'screens/expenditure.dart';
+import 'screens/memories.dart';
 import 'screens/itinerary.dart';
 import 'screens/saved.dart';
 import 'screens/home.dart';
@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: const MainPage(title: 'Flutter Demo Home Page'),
+      home: const Signup(),
     );
   }
 }
@@ -53,7 +53,7 @@ class Destination {
 }
 
 List<Destination> screens = [
-  Destination(DestinationNames.signup, DestinationIcons.signup, Signup()),
+  //Destination(DestinationNames.signup, DestinationIcons.signup, Signup()),
   Destination(DestinationNames.home, DestinationIcons.home, HomeScreen()),
   Destination(DestinationNames.expenditure, DestinationIcons.expenditure,
       ExpenditureScreen()),
