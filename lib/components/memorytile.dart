@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app/classes/memory.dart';
-import 'package:test_app/screens/viewmemory.dart';
+import 'package:test_app/screens/Memory/viewmemory.dart';
 
 final storageRef = FirebaseStorage.instance.ref();
 
@@ -11,7 +11,7 @@ Future<Uint8List?> getDownloadURL(key) => storageRef.child(key).getData();
 
 class MemoryTile extends StatelessWidget {
   const MemoryTile(
-      {super.key, this.memory = const Memory(), this.fontSize = 12});
+      {super.key, this.memory = const Memory(group: ""), this.fontSize = 12});
   final Memory memory;
   final double fontSize;
 

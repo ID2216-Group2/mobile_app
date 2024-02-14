@@ -1,18 +1,20 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:test_app/classes/group.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app/classes/memory.dart';
 import 'package:test_app/classes/people.dart';
 import 'package:test_app/constants/colours.dart';
 import 'package:test_app/components/imagepickercard.dart';
-import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:test_app/utility/globals.dart';
 
 class CreateMemoryState extends State<CreateMemory> {
   DateTime selectedDate = DateTime.now();
   String? selectedComments = "";
+  Group? selectedGroup;
   List<Person> persons = [];
   List<String> imgList = [];
 
@@ -24,7 +26,7 @@ class CreateMemoryState extends State<CreateMemory> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController commentsController = TextEditingController();
-  final MultiSelectController<Person> groupController = MultiSelectController();
+  final TextEditingController groupController = TextEditingController();
 
   List<Widget> imageSliders = [];
 
@@ -113,52 +115,24 @@ class CreateMemoryState extends State<CreateMemory> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(
-                        top: 5.0, bottom: 15.0, left: 15.0, right: 15.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('People Involved'),
-                        const SizedBox(
-                          height: 4,
-                        ),
-                        MultiSelectDropDown<Person>(
-                          fieldBackgroundColor: null,
-                          showClearIcon: false,
-                          controller: groupController,
-                          onOptionSelected: (options) {
-                            setState(() {
-                              persons = options
-                                  .toList()
-                                  .map((item) => item.value)
-                                  .toList()
-                                  .cast<Person>();
-                            });
-                          },
-                          options: widget.group
-                              .map((item) =>
-                                  ValueItem(label: item.firstName, value: item))
-                              .toList(),
-                          maxItems: 4,
-                          selectionType: SelectionType.multi,
-                          chipConfig: const ChipConfig(
-                              wrapType: WrapType.wrap,
-                              backgroundColor: Color(Colours.p500)),
-                          optionTextStyle: const TextStyle(fontSize: 16),
-                          selectedOptionIcon: const Icon(
-                            Icons.check_circle,
-                            color: Color(Colours.p500),
-                          ),
-                          selectedOptionTextColor: Colors.blue,
-                          searchEnabled: false,
-                          dropdownMargin: 2,
-                          onOptionRemoved: (index, option) {
-                            print('Removed: $option');
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                      padding: const EdgeInsets.only(
+                          top: 5.0, bottom: 15.0, left: 15.0, right: 15.0),
+                      child: SizedBox(
+                          child: DropdownMenu(
+                        expandedInsets: EdgeInsets.zero,
+                        controller: groupController,
+                        requestFocusOnTap: false,
+                        label: const Text('Group'),
+                        onSelected: (group) {
+                          setState(() {
+                            selectedGroup = group;
+                          });
+                        },
+                        dropdownMenuEntries: widget.groups
+                            .map((item) => DropdownMenuEntry(
+                                label: item.name, value: item))
+                            .toList(),
+                      ))),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
                     child: TextField(
@@ -205,6 +179,7 @@ class CreateMemoryState extends State<CreateMemory> {
             Navigator.pop(
                 context,
                 Memory(
+                  group: globalGroup,
                   date: "${selectedDate.toLocal()}".split(' ')[0],
                   mainImage:
                       imgList.isNotEmpty ? imgList[0] : "placeholder.png",
@@ -212,8 +187,8 @@ class CreateMemoryState extends State<CreateMemory> {
                   location: locationController.text,
                   title: nameController.text,
                   comments: commentsController.text,
-                  people: persons,
-                  creator: widget.creator,
+                  people: persons.map((person) => person.id).toList(),
+                  creator: globalUser.id,
                 ));
           },
           // icon: const Icon(Icons.edit, color: Color(Colours.WHITECONTRAST)),
@@ -227,8 +202,8 @@ class CreateMemoryState extends State<CreateMemory> {
 }
 
 class CreateMemory extends StatefulWidget {
-  const CreateMemory({super.key, required this.group, required this.creator});
-  final List<Person> group;
+  const CreateMemory({super.key, required this.groups, required this.creator});
+  final List<Group> groups;
   final Person creator;
   @override
   State<CreateMemory> createState() => CreateMemoryState();

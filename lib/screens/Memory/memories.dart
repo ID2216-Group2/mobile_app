@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:test_app/classes/group.dart';
 import 'package:test_app/classes/memory.dart';
 import 'package:test_app/components/memorytile.dart';
-import 'package:test_app/screens/creatememory.dart';
+import 'package:test_app/screens/Memory/creatememory.dart';
 import 'package:test_app/sampledata/people.dart';
+import 'package:test_app/utility/firebaseutils.dart';
 import 'package:test_app/constants/colours.dart';
+import 'package:test_app/utility/globals.dart';
+import 'package:test_app/classes/people.dart';
 
 const currentUser = SamplePeople.muthu;
-
-const sampleGroup = [SamplePeople.muthu, SamplePeople.ali, SamplePeople.bob];
 
 class MemoriesScreen extends StatefulWidget {
   const MemoriesScreen({super.key});
@@ -16,62 +18,31 @@ class MemoriesScreen extends StatefulWidget {
 }
 
 class MemoriesScreenState extends State<MemoriesScreen> {
-  List<Memory> data = [
-    const Memory(
-        date: "2024-01-24",
-        mainImage: "placeholder.png",
-        location: "Singapore, China",
-        title: "Eating",
-        images: ["placeholder.png"],
-        comments: "Very good food",
-        creator: SamplePeople.ali,
-        people: [SamplePeople.ali, SamplePeople.bob]),
-    const Memory(
-        date: "2024-01-03",
-        mainImage: "placeholder.png",
-        location: "Singapore, China",
-        title: "Eating",
-        images: ["placeholder.png"],
-        comments: "Very good food",
-        creator: SamplePeople.ali,
-        people: [SamplePeople.ali, SamplePeople.bob]),
-    const Memory(
-        date: "2024-01-20",
-        mainImage: "placeholder.png",
-        location: "Singapore, China",
-        title: "Eating",
-        images: ["placeholder.png"],
-        comments: "Very good food",
-        creator: SamplePeople.ali,
-        people: [SamplePeople.ali, SamplePeople.bob]),
-    const Memory(
-        date: "2023-12-24",
-        mainImage: "placeholder.png",
-        location: "Singapore, China",
-        title: "Sleeping",
-        images: ["placeholder.png"],
-        comments: "Very good sleep",
-        creator: SamplePeople.ali,
-        people: [SamplePeople.ali, SamplePeople.bob]),
-    const Memory(
-        date: "2023-12-10",
-        mainImage: "placeholder.png",
-        location: "Singapore, China",
-        title: "Sleeping",
-        images: ["placeholder.png"],
-        comments: "Very good sleep",
-        creator: SamplePeople.ali,
-        people: [SamplePeople.ali, SamplePeople.bob]),
-    const Memory(
-        date: "2023-11-24",
-        mainImage: "placeholder.png",
-        location: "Singapore, China",
-        title: "Sleeping",
-        images: ["placeholder.png"],
-        comments: "Very good sleep",
-        creator: SamplePeople.ali,
-        people: [SamplePeople.ali, SamplePeople.bob]),
-  ];
+  List<Memory> data = [];
+  List<Group> groups = [];
+  bool hasLoaded = false;
+  Person? creator;
+
+  @override
+  void initState() {
+    hasLoaded = false;
+    super.initState();
+
+    FirebaseUtils.fetchMemoriesByGroupId(globalGroup).then((fetchedMemories) {
+      print(fetchedMemories);
+      setState(() {
+        data = fetchedMemories;
+      });
+    });
+
+    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false).then((fetchedGroups) {
+      setState(() {
+        groups = fetchedGroups;
+        hasLoaded = true;
+      });
+    });
+  }
+
   int _calculateCrossAxisCount(BuildContext context) {
     // You can adjust these values according to your needs
     double width = MediaQuery.of(context).size.width;
@@ -147,13 +118,31 @@ class MemoriesScreenState extends State<MemoriesScreen> {
             final Memory? result = await Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const CreateMemory(
-                        group: sampleGroup,
-                        creator: SamplePeople.muthu,
+                  builder: (context) => CreateMemory(
+                        groups: groups,
+                        creator: globalUser,
                       )),
             );
             if (result != null) {
               setState(() => data.add(result));
+              FirebaseUtils.uploadData("memory", {
+                "date": result.date,
+                "mainImage": result.mainImage,
+                "images": result.images,
+                "location": result.location,
+                "title": result.title,
+                "comments": result.comments,
+                "creator": result.creator,
+                "people": result.people,
+                "group": globalGroup
+              }).then((_) {
+                FirebaseUtils.fetchMemoriesByGroupId(globalGroup)
+                    .then((fetchedMemories) {
+                  setState(() {
+                    data = fetchedMemories;
+                  });
+                });
+              });
             } else {
               print("NO");
             }

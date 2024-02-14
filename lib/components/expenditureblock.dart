@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:test_app/classes/expenditure.dart';
 import 'package:test_app/constants/colours.dart';
 import 'package:test_app/components/expendituretile.dart';
-import 'package:test_app/sampledata/people.dart';
+import 'package:test_app/utility/globals.dart';
 
 class ExpenditureBlock extends StatelessWidget {
   const ExpenditureBlock(
@@ -35,12 +35,14 @@ class ExpenditureBlock extends StatelessWidget {
           ),
           ...group.map(
             (expenditure) => ExpenditureTile(
-              amount: expenditure.amount,
+              amount: expenditure.creator == globalUser
+                  ? expenditure.amount / expenditure.people.length * (expenditure.people.length - 1)
+                  : expenditure.amount / expenditure.people.length,
               icon: expenditure.icon,
               category: expenditure.category,
-              type: expenditure.creator == SamplePeople.muthu
-                  ? "borrowed"
-                  : "lent",
+              type: expenditure.creator == globalUser
+                  ? "lent"
+                  : "borrowed",
             ),
           )
         ],
