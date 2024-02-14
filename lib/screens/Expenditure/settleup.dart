@@ -43,14 +43,16 @@ class SettleUpState extends State<SettleUpScreen> {
                     label: const Text('Group'),
                     onSelected: (group) {
                       setState(() {
+                        bills.clear();
+
                         selectedGroup = group as Group;
                         billMatrix = selectedGroup!.bills;
                         List<Person> people = selectedGroup!.people;
                         int currentUserIdx = people
-                            .indexWhere((person) => person.id == globalUser);
+                            .indexWhere((person) => person.id == globalUser.id);
 
                         for (var i = 0; i < people.length; i++) {
-                          if (people[i].id == globalUser) {
+                          if (people[i].id == globalUser.id) {
                             continue;
                           }
                           double amountLent = billMatrix[i][currentUserIdx] - 

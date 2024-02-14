@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app/classes/memory.dart';
-import 'package:test_app/screens/viewmemory.dart';
+import 'package:test_app/screens/Memory/viewmemory.dart';
 
 final storageRef = FirebaseStorage.instance.ref();
 

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:test_app/classes/group.dart';
 import 'package:test_app/classes/memory.dart';
 import 'package:test_app/components/memorytile.dart';
-import 'package:test_app/screens/creatememory.dart';
+import 'package:test_app/screens/Memory/creatememory.dart';
 import 'package:test_app/sampledata/people.dart';
 import 'package:test_app/utility/firebaseutils.dart';
 import 'package:test_app/constants/colours.dart';
@@ -18,20 +19,26 @@ class MemoriesScreen extends StatefulWidget {
 
 class MemoriesScreenState extends State<MemoriesScreen> {
   List<Memory> data = [];
-  List<Person> group = [];
+  List<Group> groups = [];
+  bool hasLoaded = false;
+  Person? creator;
 
   @override
   void initState() {
+    hasLoaded = false;
     super.initState();
+
     FirebaseUtils.fetchMemoriesByGroupId(globalGroup).then((fetchedMemories) {
       print(fetchedMemories);
       setState(() {
         data = fetchedMemories;
       });
     });
-    FirebaseUtils.fetchPeopleByGroupId(globalGroup).then((fetchedPeople) {
+
+    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false).then((fetchedGroups) {
       setState(() {
-        group = fetchedPeople;
+        groups = fetchedGroups;
+        hasLoaded = true;
       });
     });
   }
@@ -112,8 +119,8 @@ class MemoriesScreenState extends State<MemoriesScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) => CreateMemory(
-                        group: group,
-                        creator: SamplePeople.muthu,
+                        groups: groups,
+                        creator: globalUser,
                       )),
             );
             if (result != null) {

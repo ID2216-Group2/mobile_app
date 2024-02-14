@@ -27,6 +27,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
 
   @override
   void initState() {
+    hasLoaded = false;
     super.initState();
     FirebaseUtils.fetchExpendituresByGroupId(globalGroup)
         .then((fetchedExpenditures) {
@@ -34,7 +35,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
         expenditures = fetchedExpenditures;
       });
     });
-    FirebaseUtils.fetchGroupsByUserId(globalUser, false).then((fetchedGroups) {
+    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false).then((fetchedGroups) {
       setState(() {
         groups = fetchedGroups;
         hasLoaded = true;
@@ -98,7 +99,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
                   MaterialPageRoute(
                       builder: (context) => CreateExpenditure(
                             groups: groups,
-                            creator: globalUser,
+                            creator: globalUser.id,
                           )),
                 );
                 if (result != null) {
@@ -107,7 +108,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
                     "date": result.date,
                     "category": result.category,
                     "amount": result.amount,
-                    "creator": globalUser,
+                    "creator": globalUser.id,
                     "people": result.people,
                     "group": globalGroup
                   }).then((_) {
@@ -119,7 +120,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
                       });
                     });
 
-                    FirebaseUtils.fetchGroupsByUserId(globalUser, false).then((fetchedGroups) {
+                    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false).then((fetchedGroups) {
                       setState(() {
                         groups = fetchedGroups;
                         hasLoaded = true;
@@ -129,7 +130,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
 
                   String groupId = result.group;
                   await FirebaseUtils.updateGroupExpenditure(
-                      groupId, globalUser, result.amount);
+                      groupId, globalUser.id, result.amount);
                 } else {
                   print("NO");
                 }

@@ -137,7 +137,7 @@ class CreateExpenditureState extends State<CreateExpenditure> {
                     people: (selectedGroup as Group).people.map((person) {
                       return person.id;
                     }).toList(),
-                    creator: globalUser,
+                    creator: globalUser.id,
                     group: (selectedGroup as Group).id));
           },
           // icon: const Icon(Icons.edit, color: Color(Colours.WHITECONTRAST)),

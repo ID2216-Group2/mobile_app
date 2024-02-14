@@ -22,14 +22,14 @@ class CreateGroupState extends State<CreateGroup> {
   }
 
   Future<void> _setOtherUsers() async {
-    List<Person> otherUsers = await FirebaseUtils.fetchOtherUsersByUserId(globalUser);
+    List<Person> otherUsers = await FirebaseUtils.fetchOtherUsersByUserId(globalUser.id);
     setState(() {
       _otherUsers = otherUsers;
     });
   }
 
   Future<void> _setCurrentUser() async {
-    Person currentUser = await FirebaseUtils.fetchUserByUserId(globalUser);
+    Person currentUser = await FirebaseUtils.fetchUserByUserId(globalUser.id);
     setState(() {
       persons = [currentUser];
     });

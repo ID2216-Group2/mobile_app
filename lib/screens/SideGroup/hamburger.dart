@@ -24,7 +24,7 @@ class SideGroupState extends State<SideGroup> {
   void initState() {
     super.initState();
 
-    FirebaseUtils.fetchUserByUserId(globalUser)
+    FirebaseUtils.fetchUserByUserId(globalUser.id)
       .then((user) {
         setState(() {
           currentUser = user;
@@ -32,7 +32,7 @@ class SideGroupState extends State<SideGroup> {
         });
       });
     
-    FirebaseUtils.fetchGroupsByUserId(globalUser, true)
+    FirebaseUtils.fetchGroupsByUserId(globalUser.id, true)
       .then((groups) {
         setState(() {
           userGroups = groups;
@@ -120,7 +120,7 @@ class SideGroupState extends State<SideGroup> {
                     });
                     FirebaseUtils.uploadData("group", newGroup.toDbObject())
                       .then((_) {
-                        FirebaseUtils.fetchGroupsByUserId(globalUser, true)
+                        FirebaseUtils.fetchGroupsByUserId(globalUser.id, true)
                           .then((groups) {
                             setState(() {
                               userGroups = groups;
