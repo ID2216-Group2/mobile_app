@@ -4,12 +4,12 @@ class ItineraryTile extends StatelessWidget {
   const ItineraryTile(
       {super.key,
       this.activity = "abc",
-      this.startTime = const TimeOfDay(hour: 4, minute: 30),
-      this.endTime = const TimeOfDay(hour: 4, minute: 30),
+      this.startTime = "4:30",
+      this.endTime = "4:30",
       this.fontSize = 25});
   final String activity;
-  final TimeOfDay startTime;
-  final TimeOfDay endTime;
+  final String startTime;
+  final String endTime;
   final double fontSize;
 
   @override
@@ -39,7 +39,7 @@ class ItineraryTile extends StatelessWidget {
               children: [
                 Align(
                 alignment: Alignment.centerRight,
-                child: Text(" ${startTime.format(context)} - ${endTime.format(context)}",
+                child: Text(" ${startTime} - ${endTime}",
                     style:
                         TextStyle(fontStyle: FontStyle.italic, fontSize: 15)),
               ),

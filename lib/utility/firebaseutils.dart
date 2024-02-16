@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:test_app/classes/expenditure.dart';
+import 'package:test_app/classes/itinerary.dart';
 import 'package:test_app/classes/memory.dart';
 import 'package:test_app/classes/people.dart';
 import 'package:test_app/classes/group.dart';
@@ -23,7 +25,7 @@ class FirebaseUtils {
       return querySnapshot.docs;
     }).catchError((error) => print("Failed to retrieve data: $error"));
   }
-
+  
   static Future<dynamic> retrieveCollectionFiltered(
       collectionName, filterBy, filterTerm) async {
     CollectionReference col =
@@ -217,5 +219,35 @@ class FirebaseUtils {
       .get();
     String billsStr = Group.encodeBills(billMatrix);
     groupDoc.reference.update({ "bill": billsStr });
+  }
+
+   static Future<List<Itinerary>> fetchItinerariesByGroupId(
+      String groupId) async {
+    List<Itinerary> itineraries = [];
+
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('itinerary')
+          .where('group',
+              isEqualTo: groupId) // Assuming 'group' is the field name
+          .get();
+      for (var doc in querySnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+        // Assuming you have an Expenditure class that takes a Map<String, dynamic> in its constructor
+        
+        Itinerary itinerary = Itinerary.fromMap(data);
+        debugPrint(itinerary.activity);
+        itineraries.add(itinerary);
+      }
+    } catch (e) {
+      print("Error fetching expenditures: $e");
+    }
+    itineraries.sort((a, b) {
+      DateTime dateA = DateTime.parse(a.date);
+      DateTime dateB = DateTime.parse(b.date);
+      return dateA.compareTo(dateB);
+    });
+    return itineraries;
   }
 }

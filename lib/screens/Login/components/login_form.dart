@@ -10,7 +10,7 @@ import '../../../constants/paddings.dart';
 import '../../Signup/signup_screen.dart';
 import '../../../main.dart';
 import '../../../constants/destinations.dart';
-import '../../../screens/expenditure.dart';
+import '../../../screens/Expenditure/expenditure.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'screens/expenditure.dart';
-import 'screens/memories.dart';
-import 'screens/itinerary.dart';
+import 'screens/Expenditure/expenditure.dart';
+import 'screens/Memory/memories.dart';
+import 'screens/Itinerary/itinerary.dart';
 import 'screens/saved.dart';
 import 'screens/home.dart';
 import 'screens/signup.dart';
