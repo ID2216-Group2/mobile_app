@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:test_app/classes/expenditure.dart';
@@ -17,16 +18,20 @@ class CreateItineraryState extends State<CreateItinerary> {
   String? selectedCategory = CategoryName.none;
   String? selectedActivity;
   Group? selectedGroup;
+  String? groupName;
   List<Person> persons = [];
   final TextEditingController dateController = TextEditingController();
   final TextEditingController startTimeController = TextEditingController();
   final TextEditingController endTimeController = TextEditingController();
   final TextEditingController activityController = TextEditingController();
   final TextEditingController groupController = TextEditingController();
-
-  get selectedUsers => null;
+  final TextEditingController groupNameController = TextEditingController();
+  List<Person?> selectedUsers = [];
+  //get selectedUsers => null;
   List<Person> allUsers = [];
   bool _usersFetched = false;
+  List<String> selectedPeopleID = [];
+
   
   @override
   void initState() {
@@ -106,10 +111,17 @@ class CreateItineraryState extends State<CreateItinerary> {
   }
 
   void createGroup() {
+    // Generate the bills array
+    List<List<double>> bills = List.generate(selectedPeopleID.length, (_) => List.filled(selectedPeopleID.length, 0.0));
+
+    // Convert the bills array to a JSON string
+    String billsJson = jsonEncode(bills);
+    
     // Create a new document in the "groups" collection with selected users
-    FirebaseFirestore.instance.collection('groups').add({
-      'users': selectedUsers,
-      'createdAt': Timestamp.now(),
+    FirebaseFirestore.instance.collection('group').add({
+      'bill': billsJson,
+      'groupname': groupName,
+      'people': selectedPeopleID,
     }).then((value) {
       // Group created successfully
       print('Group created successfully with ID: ${value.id}');
@@ -122,53 +134,9 @@ class CreateItineraryState extends State<CreateItinerary> {
   String getAmPm(TimeOfDay time) {
     return time.hour >= 12 ? 'pm' : 'am';
   }
-//   Widget buildDropdown() {
-//   // return MultiSelectDropDown<String>(
-//   //   items: allUsers.map((user) {
-//   //     return MultiSelectItem<String>(value: user, label: user);
-//   //   }).toList(),
-//   //   onConfirm: (List<String> selectedValues) {
-//   //     setState(() {
-//   //       selectedUsers.clear(); // Clear previous selection
-//   //       selectedUsers.addAll(selectedValues); // Add new selection
-//   //     });
-//   //   },
-//   //   buttonBarColor: Colors.blue, // Customize button bar color if needed
-//   //   checkBoxColor: Colors.blue, // Customize checkbox color if needed
-//   //   titleTextColor: Colors.blue, // Customize title text color if needed
-//   // );
-
-
-//    return MultiSelectDropDown<Person>(
-//     fieldBackgroundColor: null,
-//     showClearIcon: false,
-//     controller: groupController,
-//     onOptionSelected: (List<ValueItem<Person>> selectedOptions) {
-//     setState(() {
-//       // Extract the Person objects directly
-//       List<Person?> selectedPersons = selectedOptions.map((item) => item.value).toList();
-//       // Handle selected options
-//     });},
-
-//     options: allUsers.map((user) => ValueItem(label: user.name, value: user)).toList(),
-//     maxItems: 4,
-//     selectionType: SelectionType.multi,
-//     chipConfig: const ChipConfig(
-//         wrapType: WrapType.wrap,
-//         backgroundColor: Color(Colours.p500)),
-//     optionTextStyle: const TextStyle(fontSize: 16),
-//     selectedOptionIcon: const Icon(
-//       Icons.check_circle,
-//       color: Color(Colours.p500),
-//     ),
-//     selectedOptionTextColor: Colors.blue,
-//     searchEnabled: false,
-//     dropdownMargin: 2,
-//     onOptionRemoved: (index, option) {
-//       print('Removed: $option');
-//     },
-//   );
-// }
+  MultiSelectController<Person> multiSelectController = MultiSelectController();
+  
+List<Person?> selectedPersons =[];
 
   @override
   Widget build(BuildContext context) {
@@ -245,20 +213,6 @@ class CreateItineraryState extends State<CreateItinerary> {
                     keyboardType: TextInputType.number,
                   ))),
 
-                  // FutureBuilder(
-                  //   future: _usersFetched ? null : fetchAllUsers(), // Only call fetchAllUsers() if _usersFetched is false
-                  //   builder: (context, snapshot) {
-                  //     if (snapshot.connectionState == ConnectionState.waiting) {
-                  //       return Center(child: CircularProgressIndicator());
-                  //     } else if (snapshot.hasError) {
-                  //       return Center(child: Text('Error: ${snapshot.error}'));
-                  //     } else {
-                  //       //List<String> users = snapshot.data as List<String>;
-                  //       return buildDropdown();
-                  //     }
-                  //   },
-                  // ),
-
                   Padding(
                 padding: const EdgeInsets.all(15.0),
                 child: SizedBox(
@@ -269,98 +223,97 @@ class CreateItineraryState extends State<CreateItinerary> {
                   label: const Text('Group'),
                   onSelected: (group) {
                     setState(() {
-                      selectedGroup = group;
+                      if (group is Group) {
+                        selectedGroup = group;
+                      } else if (group == 'add_group') {
+                        // Handle the "Add Group" action
+                        // For example, show a dialog to add a new group
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Create New Group"),
+                              content: Text("Group members"),
+                              actions: <Widget>[
+                                TextField(
+                                    controller: groupNameController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Group Name',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        groupName = value;
+                                      });
+                                    },
+                                  ),
+                                SizedBox(height: 16),
+                                MultiSelectDropDown<Person>(
+                                  fieldBackgroundColor: null,
+                                  showClearIcon: false,
+                                  controller: multiSelectController,
+                                  onOptionSelected: (List<ValueItem<Person>> selectedOptions) {
+                                  setState(() {
+                                    // Extract the Person objects directly
+                                    selectedPersons = selectedOptions.map((item) => item.value).toList();
+                                    // Handle selected options
+                                    debugPrint(selectedPersons.map((person) => person?.id ?? '').join(', '));
+                                    
+                                      // Iterate through selectedPeople list to extract IDs
+                                      for (Person? person in selectedPersons) {
+                                        if (person != null && !selectedPeopleID.contains(person.id)) {
+                                          selectedPeopleID.add(person.id);
+                                        }
+                                      }
+
+                                  
+                                  });},
+
+                                  options: allUsers.map((user) => ValueItem(label: user.name, value: user)).toList(),
+                                  maxItems: 4,
+                                  selectionType: SelectionType.multi,
+                                  chipConfig: const ChipConfig(
+                                      wrapType: WrapType.wrap,
+                                      backgroundColor: Color(Colours.p500)),
+                                  optionTextStyle: const TextStyle(fontSize: 16),
+                                  selectedOptionIcon: const Icon(
+                                    Icons.check_circle,
+                                    color: Color(Colours.p500),
+                                  ),
+                                  selectedOptionTextColor: Colors.blue,
+                                  searchEnabled: false,
+                                  dropdownMargin: 2,
+                                  onOptionRemoved: (index, option) {
+                                    print('Removed: $option');
+                                  },
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    
+                                    createGroup();
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text("Add group"),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
                     });
                   },
-                  dropdownMenuEntries: widget.groups
+                  dropdownMenuEntries: [
+                    ...widget.groups
                     .map((item) =>
                         DropdownMenuEntry(label: item.name, value: item))
                     .toList(),
+                    DropdownMenuEntry(
+                      label: 'Add Group',
+                      value: 'add_group',
+                      
+                    ),
+                  ]
                 ))),
-
-        //           Padding(
-        // padding: const EdgeInsets.all(16.0),
-        // child: Column(
-        //   crossAxisAlignment: CrossAxisAlignment.start,
-        //   children: [
-        //     Text(
-        //       'Select Users:',
-        //       style: TextStyle(fontSize: 18),
-        //     ),
-        //     SizedBox(height: 8),
-        //     DropdownButtonFormField<String>(
-        //       items: allUsers.map((user) {
-        //         return DropdownMenuItem(
-        //           value: user,
-        //           child: Text(user),
-        //         );
-        //       }).toList(),
-        //       onChanged: (String? selectedUser) {
-        //         if (selectedUser != null) {
-        //           setState(() {
-        //             selectedUsers.add(selectedUser);
-        //           });
-        //         }
-        //       },
-        //       value: null,
-        //       hint: Text('Select Users'),
-        //     ),
-        //     SizedBox(height: 16),
-        //     ElevatedButton(
-        //       onPressed: () {
-        //         createGroup();
-        //       },
-        //       child: Text('Create Group'),
-        //     ),
-        //   ],
-        // ),)
-              // Padding(
-              //   padding: const EdgeInsets.only(
-              //       top: 5.0, bottom: 15.0, left: 15.0, right: 15.0),
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       const Text('People Involved'),
-              //       const SizedBox(
-              //         height: 4,
-              //       ),
-              //       MultiSelectDropDown<Person>(
-              //         fieldBackgroundColor: null,
-              //         showClearIcon: false,
-              //         controller: groupController,
-              //         onOptionSelected: (options) {
-              //           setState(() {
-              //             persons = options
-              //                 .toList()
-              //                 .map((item) => item.value)
-              //                 .toList()
-              //                 .cast<Person>();
-              //           });
-              //         },
-              //         options: widget.group
-              //             .map((item) =>
-              //                 ValueItem(label: item.name, value: item))
-              //             .toList(),
-              //         maxItems: 4,
-              //         selectionType: SelectionType.multi,
-              //         chipConfig: const ChipConfig(
-              //             wrapType: WrapType.wrap,
-              //             backgroundColor: Color(Colours.p500)),
-              //         optionTextStyle: const TextStyle(fontSize: 16),
-              //         selectedOptionIcon: const Icon(
-              //           Icons.check_circle,
-              //           color: Color(Colours.p500),
-              //         ),
-              //         selectedOptionTextColor: Colors.blue,
-              //         searchEnabled: false,
-              //         dropdownMargin: 2,
-              //         onOptionRemoved: (index, option) {
-              //           print('Removed: $option');
-              //         },
-              //       ),
-              //     ],
-              //   ),
-              // ),
             ],
           ),
         ),
