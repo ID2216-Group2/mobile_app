@@ -237,7 +237,6 @@ class FirebaseUtils {
         // Assuming you have an Expenditure class that takes a Map<String, dynamic> in its constructor
         
         Itinerary itinerary = Itinerary.fromMap(data);
-        debugPrint(itinerary.activity);
         itineraries.add(itinerary);
       }
     } catch (e) {
@@ -250,4 +249,6 @@ class FirebaseUtils {
     });
     return itineraries;
   }
+
+  
 }

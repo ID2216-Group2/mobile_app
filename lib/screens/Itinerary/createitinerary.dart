@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:test_app/classes/expenditure.dart';
 import 'package:test_app/classes/group.dart';
 import 'package:test_app/classes/itinerary.dart';
 import 'package:test_app/classes/people.dart';
@@ -68,16 +67,16 @@ class CreateItineraryState extends State<CreateItinerary> {
         if (x == 0) {
           selectedStartTime = _picked;
           startTimeController.value = startTimeController.value.copyWith(
-            text: "${selectedStartTime}".split(' ')[0],
+            text: "${selectedStartTime.hour}:${selectedStartTime.minute.toString().padLeft(2, '0')}",
             selection: TextSelection.collapsed(
-                offset: "${selectedStartTime}".split(' ')[0].length),
+                offset: "${selectedStartTime.hour}:${selectedStartTime.minute.toString().padLeft(2, '0')}".length),
           );
         } else {
           selectedEndTime = _picked;
           endTimeController.value = endTimeController.value.copyWith(
-            text: "${selectedEndTime}".split(' ')[0],
-            selection: TextSelection.collapsed(
-                offset: "${selectedEndTime}".split(' ')[0].length),
+          text: "${selectedEndTime.hour}:${selectedEndTime.minute.toString().padLeft(2, '0')}",
+          selection: TextSelection.collapsed(
+              offset: "${selectedEndTime.hour}:${selectedEndTime.minute.toString().padLeft(2, '0')}".length),
           );
         }
       });
@@ -91,15 +90,12 @@ class CreateItineraryState extends State<CreateItinerary> {
     try {
       QuerySnapshot querySnapshot =
           await FirebaseFirestore.instance.collection('users').get();
-      debugPrint("qqqq");
       List<Person> fetchedUsers = [];
       querySnapshot.docs.forEach((doc) {
-        debugPrint(doc['name']);
         fetchedUsers.add(Person(id: doc.id, name: doc['name']));
       });
 
       setState(() {
-        debugPrint("ttttttttttttttttt");
         _usersFetched = true;
         allUsers = fetchedUsers;
         
@@ -256,9 +252,6 @@ List<Person?> selectedPersons =[];
                                   setState(() {
                                     // Extract the Person objects directly
                                     selectedPersons = selectedOptions.map((item) => item.value).toList();
-                                    // Handle selected options
-                                    debugPrint(selectedPersons.map((person) => person?.id ?? '').join(', '));
-                                    
                                       // Iterate through selectedPeople list to extract IDs
                                       for (Person? person in selectedPersons) {
                                         if (person != null && !selectedPeopleID.contains(person.id)) {
@@ -310,7 +303,6 @@ List<Person?> selectedPersons =[];
                     DropdownMenuEntry(
                       label: 'Add Group',
                       value: 'add_group',
-                      
                     ),
                   ]
                 ))),
@@ -324,19 +316,44 @@ List<Person?> selectedPersons =[];
           elevation: 0,
           backgroundColor: const Color(Colours.PRIMARY),
           onPressed: () {
-            createGroup();
-            Navigator.pop(
-                context,
-                Itinerary(
-                    date: "${selectedDate.toLocal()}".split(' ')[0],
-                    activity: activityController.text,
-                    startTime: "${selectedStartTime.hourOfPeriod}:${selectedStartTime.minute.toString().padLeft(2, '0')} ${getAmPm(selectedStartTime)}",
-                    endTime: "${selectedEndTime.hourOfPeriod}:${selectedEndTime.minute.toString().padLeft(2, '0')} ${getAmPm(selectedEndTime)}",
-                    people: (selectedGroup as Group).people.map((person) {
-                      return person.id;
-                    }).toList(),
-                    creator: globalUser.id,
-                    group: (selectedGroup as Group).id));
+            // Convert selected start and end times into DateTime objects for comparison
+            DateTime startDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedStartTime.hour, selectedStartTime.minute);
+            DateTime endDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedEndTime.hour, selectedEndTime.minute);
+            //check whether endTime is later than startTime
+            if (startDateTime.isAfter(endDateTime)) {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Invalid Time'),
+                    content: Text('Start time cannot be later than end time. Please choose valid times.'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('OK'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            }
+            else{
+              //createGroup();
+                  Navigator.pop(
+                      context,
+                      Itinerary(
+                          date: "${selectedDate.toLocal()}".split(' ')[0],
+                          activity: activityController.text,
+                          startTime: "${selectedStartTime.hourOfPeriod}:${selectedStartTime.minute.toString().padLeft(2, '0')} ${getAmPm(selectedStartTime)}",
+                          endTime: "${selectedEndTime.hourOfPeriod}:${selectedEndTime.minute.toString().padLeft(2, '0')} ${getAmPm(selectedEndTime)}",
+                          people: (selectedGroup as Group).people.map((person) {
+                            return person.id;
+                          }).toList(),
+                          creator: globalUser.id,
+                          group: (selectedGroup as Group).id));
+            }
           },
           // icon: const Icon(Icons.edit, color: Color(Colours.WHITECONTRAST)),
           label: const Text("Add Itinerary",
