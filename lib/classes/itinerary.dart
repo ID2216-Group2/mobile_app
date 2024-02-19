@@ -5,16 +5,30 @@ import 'package:test_app/classes/people.dart';
 class Itinerary {
   const Itinerary({
     this.date = "2000-01-01",
+    required this.group,
     this.activity = "museum",
-    this.startTime = const TimeOfDay(hour: 4, minute: 20),
-    this.endTime = const TimeOfDay(hour: 6, minute: 20),
+    this.startTime = "4:20",
+    this.endTime = "6:20",
     this.creator,
     this.people = const [],
   });
   final String date;
-  final TimeOfDay startTime;
-  final TimeOfDay endTime;
-  final List<Person> people;
+  final String startTime;
+  final String endTime;
+  final List<dynamic> people;
+  final String group;
   final String activity;
-  final Person? creator;
+  final String? creator;
+
+  factory Itinerary.fromMap(Map<String, dynamic> data) {
+    return Itinerary(
+        date: data['date'],
+        activity: data['activity'],
+        startTime: data['startTime'],
+        endTime: data['endTime'],
+        creator: data['creator'],
+        group: data['group'],
+        people: data['people'],
+    );  
+  }
 }
