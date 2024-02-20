@@ -249,14 +249,15 @@ class FirebaseUtils {
     return itineraries;
   }
 
-  static Future<List<Itinerary>> fetchTodayItinerariesByUserId(String userId) async {
+  static Future<List<Itinerary>> fetchTodayItinerariesByUserId(
+      String userId) async {
     List<Itinerary> itineraries = [];
     try {
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('itinerary')
-        .where('people', arrayContains: userId)
-        .where('date', isEqualTo: getTodayDate())
-        .get();
+          .collection('itinerary')
+          .where('people', arrayContains: userId)
+          .where('date', isEqualTo: getTodayDate())
+          .get();
 
       for (var doc in querySnapshot.docs) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
@@ -274,7 +275,7 @@ class FirebaseUtils {
 
   static Future<Group> fetchGroupByGroupId(String groupId) async {
     DocumentSnapshot groupDoc =
-      await FirebaseFirestore.instance.collection('group').doc(groupId).get();
+        await FirebaseFirestore.instance.collection('group').doc(groupId).get();
     Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
     List<dynamic> peopleIds = groupData['people'];
     List<Person> people = [];
@@ -285,6 +286,7 @@ class FirebaseUtils {
     groupData['id'] = groupDoc.id;
     groupData['people'] = people;
     return Group.fromMap(groupData);
+  }
 
   static Future<void> updateMemorySaved(String memoryId, bool saved) async {
     DocumentSnapshot groupDoc = await FirebaseFirestore.instance
@@ -292,6 +294,5 @@ class FirebaseUtils {
         .doc(memoryId)
         .get();
     groupDoc.reference.update({"saved": saved});
-
   }
 }

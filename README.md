@@ -1,16 +1,26 @@
-# test_app
+# Hangouts
 
-A new Flutter project.
+Hangouts is a mobile application designed to allow users to share memories, plans and expenses easily. Built with Flutter and Firebase, it offers a seamless and interactive experience for managing group finances, itineraries and document events easily.
+
+## Features
+
+- **Authentication**: Secure sign-in and sign-up functionality to keep your data private and accessible across devices.
+- **Share expenditures**: Create and split expenses with your group.
+- **Share memories**: Create memories to share with your group, including images.
+- **Make plans**: Make plans and share them with your group.
+- **Material Design**: A clean and modern UI adhering to material design principles for an intuitive user experience.
+<!-- - **Cross-Platform**: Available for both iOS and Android devices. -->
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+To get a local copy up and running, follow these simple steps.
 
-A few resources to get you started if this is your first Flutter project:
+### Prerequisites
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Install [Flutter](https://flutter.dev/docs/get-started/install) (make sure to follow the instructions for your specific operating system).
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Installation
+
+1. Clone the repo:
+   ```sh
+   git clone https://github.com/ID2216-Group2/mobile_app.git
