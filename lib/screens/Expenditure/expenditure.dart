@@ -10,6 +10,7 @@ import 'package:test_app/components/expenditureblock.dart';
 import 'package:test_app/screens/Expenditure/settleup.dart';
 import 'package:test_app/utility/firebaseutils.dart';
 import 'package:test_app/utility/globals.dart';
+import 'package:test_app/components/custom_fab.dart';
 
 const currentUser = SamplePeople.muthu;
 
@@ -60,7 +61,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
     }
     return Scaffold(
         body: SingleChildScrollView(
-          padding: EdgeInsets.only(bottom: 100),
+          padding: EdgeInsets.only(bottom: 130),
           child: Column(children: <Widget>[
             const CustomCard(),
             Column(
@@ -70,10 +71,10 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
             )
           ]),
         ),
-        floatingActionButton: Row(
+        floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            FloatingActionButton.extended(
+            CustomSizedFloatingActionButton(
               heroTag: 'settle-up-button',
               elevation: 12.0,
               backgroundColor: const Color(Colours.PRIMARY),
@@ -90,11 +91,11 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
                     },
               icon:
                   const Icon(Icons.check, color: Color(Colours.WHITECONTRAST)),
-              label: const Text("Settle Up",
-                  style: TextStyle(color: Color(Colours.WHITECONTRAST))),
             ),
-            SizedBox(width: 30),
-            FloatingActionButton.extended(
+            SizedBox(
+              height: 10,
+            ),
+            CustomSizedFloatingActionButton(
               heroTag: 'add-expenditure-button',
               elevation: 12.0,
               backgroundColor: const Color(Colours.PRIMARY),
@@ -144,9 +145,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
                         print("NO");
                       }
                     },
-              icon: const Icon(Icons.edit, color: Color(Colours.WHITECONTRAST)),
-              label: const Text("Add Expenditure",
-                  style: TextStyle(color: Color(Colours.WHITECONTRAST))),
+              icon: const Icon(Icons.add, color: Color(Colours.WHITECONTRAST)),
             )
           ],
         ));

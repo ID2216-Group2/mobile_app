@@ -8,6 +8,7 @@ import 'package:test_app/utility/firebaseutils.dart';
 import 'package:test_app/constants/colours.dart';
 import 'package:test_app/utility/globals.dart';
 import 'package:test_app/classes/people.dart';
+import 'package:test_app/components/custom_fab.dart';
 
 const currentUser = SamplePeople.muthu;
 
@@ -114,7 +115,8 @@ class MemoriesScreenState extends State<MemoriesScreen> {
             );
           },
         ),
-        floatingActionButton: FloatingActionButton.extended(
+        floatingActionButton: CustomSizedFloatingActionButton(
+          heroTag: "add-memory",
           elevation: 12.0,
           backgroundColor: const Color(Colours.PRIMARY),
           onPressed: () async {
@@ -150,9 +152,7 @@ class MemoriesScreenState extends State<MemoriesScreen> {
               print("NO");
             }
           },
-          icon: const Icon(Icons.photo, color: Color(Colours.WHITECONTRAST)),
-          label: const Text("Add Memory",
-              style: TextStyle(color: Color(Colours.WHITECONTRAST))),
+          icon: const Icon(Icons.add, color: Color(Colours.WHITECONTRAST)),
         ));
   }
 }

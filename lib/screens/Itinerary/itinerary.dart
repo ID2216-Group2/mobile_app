@@ -9,6 +9,7 @@ import 'package:test_app/sampledata/people.dart';
 import 'package:test_app/screens/Itinerary/createitinerary.dart';
 import 'package:test_app/utility/firebaseutils.dart';
 import 'package:test_app/utility/globals.dart';
+import 'package:test_app/components/custom_fab.dart';
 
 const currentUser = SamplePeople.muthu;
 
@@ -34,14 +35,14 @@ class ItineraryScreenState extends State<ItineraryScreen> {
         itineraries = fetchedItineraries;
       });
     });
-    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false).then((fetchedGroups) {
+    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
+        .then((fetchedGroups) {
       setState(() {
         groups = fetchedGroups;
         hasLoaded = true;
       });
     });
   }
-
 
   int compareItineraries(Itinerary a, Itinerary b) {
     // First, compare dates
@@ -52,15 +53,14 @@ class ItineraryScreenState extends State<ItineraryScreen> {
     // If dates are the same, compare start times
     return a.startTime.compareTo(b.startTime);
   }
-  
-
 
   @override
   Widget build(BuildContext context) {
     groupedData = {};
     for (var entry in itineraries) {
       DateTime date = DateTime.parse(entry.date);
-      if (date.isAfter(DateTime.now()) || date.isAtSameMomentAs(DateTime.now())) {
+      if (date.isAfter(DateTime.now()) ||
+          date.isAtSameMomentAs(DateTime.now())) {
         String yearMonthDay = DateFormat('yyyy-MM-dd').format(date);
         if (!groupedData.containsKey(yearMonthDay)) {
           groupedData[yearMonthDay] = [];
@@ -70,8 +70,8 @@ class ItineraryScreenState extends State<ItineraryScreen> {
     }
 
     for (var key in groupedData.keys) {
-    groupedData[key]!.sort(compareItineraries);
-  }
+      groupedData[key]!.sort(compareItineraries);
+    }
 
     // Now, if you want to sort groupedData keys based on date, you can create a list of keys and sort them
     List<String> sortedKeys = groupedData.keys.toList()
@@ -97,55 +97,57 @@ class ItineraryScreenState extends State<ItineraryScreen> {
         floatingActionButton: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            FloatingActionButton.extended(
+            CustomSizedFloatingActionButton(
               heroTag: 'add-itinerary-button',
               elevation: 12.0,
               backgroundColor: const Color(Colours.PRIMARY),
-              onPressed: !hasLoaded ? null : () async {
-                final Itinerary? result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => CreateItinerary(
-                            groups: groups,
-                            creator: globalUser.id,
-                          )),
-                );
-                if (result != null) {
-                  setState(() => itineraries.add(result));
-                  FirebaseUtils.uploadData("itinerary", {
-                    "date": result.date,
-                    "startTime": result.startTime,
-                    "endTime": result.endTime,
-                    "activity": result.activity,
-                    "creator": globalUser.id,
-                    "people": result.people,
-                    "group": globalGroup
-                  }).then((_) {
-                    // Fetch the latest data again after adding a new expenditure
-                    FirebaseUtils.fetchItinerariesByGroupId(globalGroup)
-                        .then((fetchedItineraries) {
-                      setState(() {
-                        itineraries = fetchedItineraries;
-                      });
-                    });
+              onPressed: !hasLoaded
+                  ? null
+                  : () async {
+                      final Itinerary? result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CreateItinerary(
+                                  groups: groups,
+                                  creator: globalUser.id,
+                                )),
+                      );
+                      if (result != null) {
+                        setState(() => itineraries.add(result));
+                        FirebaseUtils.uploadData("itinerary", {
+                          "date": result.date,
+                          "startTime": result.startTime,
+                          "endTime": result.endTime,
+                          "activity": result.activity,
+                          "creator": globalUser.id,
+                          "people": result.people,
+                          "group": globalGroup
+                        }).then((_) {
+                          // Fetch the latest data again after adding a new expenditure
+                          FirebaseUtils.fetchItinerariesByGroupId(globalGroup)
+                              .then((fetchedItineraries) {
+                            setState(() {
+                              itineraries = fetchedItineraries;
+                            });
+                          });
 
-                    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false).then((fetchedGroups) {
-                      setState(() {
-                        groups = fetchedGroups;
-                        hasLoaded = true;
-                      });
-                    });
-                  });
-                  String groupId = result.group;
-                  // await FirebaseUtils.updateGroupItinerary(
-                  //     groupId, globalUser.id, result.amount);
-                } else {
-                  print("NO");
-                }
-              },
-              icon: const Icon(Icons.edit, color: Color(Colours.WHITECONTRAST)),
-              label: const Text("Add Itinerary",
-                  style: TextStyle(color: Color(Colours.WHITECONTRAST))),
+                          FirebaseUtils.fetchGroupsByUserId(
+                                  globalUser.id, false)
+                              .then((fetchedGroups) {
+                            setState(() {
+                              groups = fetchedGroups;
+                              hasLoaded = true;
+                            });
+                          });
+                        });
+                        String groupId = result.group;
+                        // await FirebaseUtils.updateGroupItinerary(
+                        //     groupId, globalUser.id, result.amount);
+                      } else {
+                        print("NO");
+                      }
+                    },
+              icon: const Icon(Icons.add, color: Color(Colours.WHITECONTRAST)),
             )
           ],
         ));

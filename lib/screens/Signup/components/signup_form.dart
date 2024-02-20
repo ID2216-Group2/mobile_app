@@ -19,8 +19,10 @@ class SignUpForm extends StatefulWidget {
 
 class _SignUpFormState extends State<SignUpForm> {
   final _nameController = TextEditingController(); // Controller for name input
-  final _emailController = TextEditingController(); // Controller for email input
-  final _passwordController = TextEditingController(); // Controller for password input
+  final _emailController =
+      TextEditingController(); // Controller for email input
+  final _passwordController =
+      TextEditingController(); // Controller for password input
 
   void _submitForm() async {
     String name = _nameController.text.trim();
@@ -28,7 +30,8 @@ class _SignUpFormState extends State<SignUpForm> {
     String password = _passwordController.text.trim();
 
     // Check if the email already exists in Firestore
-    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
         .collection('users')
         .where('email', isEqualTo: email)
         .get();
@@ -49,8 +52,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 ),
               ],
             );
-          }
-      );
+          });
       return; // Do not proceed with adding the email to Firestore
     }
     // Add the form data to Firestore
@@ -74,7 +76,6 @@ class _SignUpFormState extends State<SignUpForm> {
         },
       ),
     );
-
   }
 
   @override
@@ -82,27 +83,30 @@ class _SignUpFormState extends State<SignUpForm> {
     return Form(
       child: Column(
         children: [
-          TextFormField(
-            controller: _nameController,
-            keyboardType: TextInputType.name,
-            textInputAction: TextInputAction.next,
-            cursorColor: const Color(Colours.PRIMARY),
-            //onSaved: (name) {
-            //  // Add the email to Firestore
-            //  FirebaseFirestore.instance
-            //  .collection('users') 
-            //  .add({'name': name});
-            //},
-            decoration: const InputDecoration(
-              hintText: "Your user name",
-              prefixIcon: Padding(
-                padding: EdgeInsets.all(defaultPadding),
-                child: Icon(Icons.person),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: defaultPadding / 2.5),
+            child: TextFormField(
+              controller: _nameController,
+              keyboardType: TextInputType.name,
+              textInputAction: TextInputAction.next,
+              cursorColor: const Color(Colours.PRIMARY),
+              //onSaved: (name) {
+              //  // Add the email to Firestore
+              //  FirebaseFirestore.instance
+              //  .collection('users')
+              //  .add({'name': name});
+              //},
+              decoration: const InputDecoration(
+                hintText: "Your user name",
+                prefixIcon: Padding(
+                  padding: EdgeInsets.all(defaultPadding),
+                  child: Icon(Icons.person),
+                ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: defaultPadding),
+            padding: const EdgeInsets.symmetric(vertical: defaultPadding / 2.5),
             child: TextFormField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
@@ -111,7 +115,7 @@ class _SignUpFormState extends State<SignUpForm> {
               //onSaved: (email) {
               //  // Add the email to Firestore
               //  FirebaseFirestore.instance
-              //  .collection('users') 
+              //  .collection('users')
               //  .add({'email': email});
               //},
               decoration: const InputDecoration(
@@ -124,7 +128,7 @@ class _SignUpFormState extends State<SignUpForm> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: defaultPadding),
+            padding: const EdgeInsets.symmetric(vertical: defaultPadding / 2.5),
             child: TextFormField(
               controller: _passwordController,
               textInputAction: TextInputAction.done,
@@ -133,7 +137,7 @@ class _SignUpFormState extends State<SignUpForm> {
               //onSaved: (password) {
               //  // Add the email to Firestore
               //  FirebaseFirestore.instance
-              //  .collection('password') 
+              //  .collection('password')
               //  .add({'password': password});
               //},
               decoration: const InputDecoration(
