@@ -196,6 +196,7 @@ class CreateMemoryState extends State<CreateMemory> {
             Navigator.pop(
                 context,
                 Memory(
+                  docid: "",
                   group: globalGroup,
                   date: "${selectedDate.toLocal()}".split(' ')[0],
                   mainImage:

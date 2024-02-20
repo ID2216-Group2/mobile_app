@@ -31,7 +31,6 @@ class CreateItineraryState extends State<CreateItinerary> {
   bool _usersFetched = false;
   List<String> selectedPeopleID = [];
 
-  
   @override
   void initState() {
     super.initState();
@@ -66,16 +65,22 @@ class CreateItineraryState extends State<CreateItinerary> {
         if (x == 0) {
           selectedStartTime = _picked;
           startTimeController.value = startTimeController.value.copyWith(
-            text: "${selectedStartTime.hour}:${selectedStartTime.minute.toString().padLeft(2, '0')}",
+            text:
+                "${selectedStartTime.hour}:${selectedStartTime.minute.toString().padLeft(2, '0')}",
             selection: TextSelection.collapsed(
-                offset: "${selectedStartTime.hour}:${selectedStartTime.minute.toString().padLeft(2, '0')}".length),
+                offset:
+                    "${selectedStartTime.hour}:${selectedStartTime.minute.toString().padLeft(2, '0')}"
+                        .length),
           );
         } else {
           selectedEndTime = _picked;
           endTimeController.value = endTimeController.value.copyWith(
-          text: "${selectedEndTime.hour}:${selectedEndTime.minute.toString().padLeft(2, '0')}",
-          selection: TextSelection.collapsed(
-              offset: "${selectedEndTime.hour}:${selectedEndTime.minute.toString().padLeft(2, '0')}".length),
+            text:
+                "${selectedEndTime.hour}:${selectedEndTime.minute.toString().padLeft(2, '0')}",
+            selection: TextSelection.collapsed(
+                offset:
+                    "${selectedEndTime.hour}:${selectedEndTime.minute.toString().padLeft(2, '0')}"
+                        .length),
           );
         }
       });
@@ -97,7 +102,6 @@ class CreateItineraryState extends State<CreateItinerary> {
       setState(() {
         _usersFetched = true;
         allUsers = fetchedUsers;
-        
       });
       return;
     } catch (error) {
@@ -107,11 +111,12 @@ class CreateItineraryState extends State<CreateItinerary> {
 
   void createGroup() {
     // Generate the bills array
-    List<List<double>> bills = List.generate(selectedPeopleID.length, (_) => List.filled(selectedPeopleID.length, 0.0));
+    List<List<double>> bills = List.generate(selectedPeopleID.length,
+        (_) => List.filled(selectedPeopleID.length, 0.0));
 
     // Convert the bills array to a JSON string
     String billsJson = jsonEncode(bills);
-    
+
     // Create a new document in the "groups" collection with selected users
     FirebaseFirestore.instance.collection('group').add({
       'bill': billsJson,
@@ -129,9 +134,10 @@ class CreateItineraryState extends State<CreateItinerary> {
   String getAmPm(TimeOfDay time) {
     return time.hour >= 12 ? 'pm' : 'am';
   }
+
   MultiSelectController<Person> multiSelectController = MultiSelectController();
-  
-List<Person?> selectedPersons =[];
+
+  List<Person?> selectedPersons = [];
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +149,7 @@ List<Person?> selectedPersons =[];
       body: Center(
         child: Padding(
           padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-          child: Column(
+          child: ListView(
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(15.0),
@@ -205,106 +211,116 @@ List<Person?> selectedPersons =[];
                       border: OutlineInputBorder(),
                       labelText: 'Activity',
                     ),
-                    keyboardType: TextInputType.number,
+                    // keyboardType: TextInputType.number,
                   ))),
-
-                  Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: SizedBox(
-                    child: DropdownMenu(
-                  expandedInsets: EdgeInsets.zero,
-                  controller: groupController,
-                  requestFocusOnTap: false,
-                  label: const Text('Group'),
-                  onSelected: (group) {
-                    setState(() {
-                      if (group is Group) {
-                        selectedGroup = group;
-                      } else if (group == 'add_group') {
-                        // Handle the "Add Group" action
-                        // For example, show a dialog to add a new group
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text("Create New Group"),
-                              content: Text("Group members"),
-                              actions: <Widget>[
-                                TextField(
-                                    controller: groupNameController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Group Name',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        groupName = value;
-                                      });
-                                    },
-                                  ),
-                                SizedBox(height: 16),
-                                MultiSelectDropDown<Person>(
-                                  fieldBackgroundColor: null,
-                                  showClearIcon: false,
-                                  controller: multiSelectController,
-                                  onOptionSelected: (List<ValueItem<Person>> selectedOptions) {
-                                  setState(() {
-                                    // Extract the Person objects directly
-                                    selectedPersons = selectedOptions.map((item) => item.value).toList();
-                                      // Iterate through selectedPeople list to extract IDs
-                                      for (Person? person in selectedPersons) {
-                                        if (person != null && !selectedPeopleID.contains(person.id)) {
-                                          selectedPeopleID.add(person.id);
-                                        }
-                                      }
-
-                                  
-                                  });},
-
-                                  options: allUsers.map((user) => ValueItem(label: user.name, value: user)).toList(),
-                                  maxItems: 4,
-                                  selectionType: SelectionType.multi,
-                                  chipConfig: const ChipConfig(
-                                      wrapType: WrapType.wrap,
-                                      backgroundColor: Color(Colours.p500)),
-                                  optionTextStyle: const TextStyle(fontSize: 16),
-                                  selectedOptionIcon: const Icon(
-                                    Icons.check_circle,
-                                    color: Color(Colours.p500),
-                                  ),
-                                  selectedOptionTextColor: Colors.blue,
-                                  searchEnabled: false,
-                                  dropdownMargin: 2,
-                                  onOptionRemoved: (index, option) {
-                                    print('Removed: $option');
+              Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: SizedBox(
+                      child: DropdownMenu(
+                          expandedInsets: EdgeInsets.zero,
+                          controller: groupController,
+                          requestFocusOnTap: false,
+                          label: const Text('Group'),
+                          onSelected: (group) {
+                            setState(() {
+                              if (group is Group) {
+                                selectedGroup = group;
+                              } else if (group == 'add_group') {
+                                // Handle the "Add Group" action
+                                // For example, show a dialog to add a new group
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text("Create New Group"),
+                                      content: Text("Group members"),
+                                      actions: <Widget>[
+                                        TextField(
+                                          controller: groupNameController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Group Name',
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          onChanged: (value) {
+                                            setState(() {
+                                              groupName = value;
+                                            });
+                                          },
+                                        ),
+                                        SizedBox(height: 16),
+                                        MultiSelectDropDown<Person>(
+                                          fieldBackgroundColor: null,
+                                          showClearIcon: false,
+                                          controller: multiSelectController,
+                                          onOptionSelected:
+                                              (List<ValueItem<Person>>
+                                                  selectedOptions) {
+                                            setState(() {
+                                              // Extract the Person objects directly
+                                              selectedPersons = selectedOptions
+                                                  .map((item) => item.value)
+                                                  .toList();
+                                              // Iterate through selectedPeople list to extract IDs
+                                              for (Person? person
+                                                  in selectedPersons) {
+                                                if (person != null &&
+                                                    !selectedPeopleID
+                                                        .contains(person.id)) {
+                                                  selectedPeopleID
+                                                      .add(person.id);
+                                                }
+                                              }
+                                            });
+                                          },
+                                          options: allUsers
+                                              .map((user) => ValueItem(
+                                                  label: user.name,
+                                                  value: user))
+                                              .toList(),
+                                          maxItems: 4,
+                                          selectionType: SelectionType.multi,
+                                          chipConfig: const ChipConfig(
+                                              wrapType: WrapType.wrap,
+                                              backgroundColor:
+                                                  Color(Colours.p500)),
+                                          optionTextStyle:
+                                              const TextStyle(fontSize: 16),
+                                          selectedOptionIcon: const Icon(
+                                            Icons.check_circle,
+                                            color: Color(Colours.p500),
+                                          ),
+                                          selectedOptionTextColor: Colors.blue,
+                                          searchEnabled: false,
+                                          dropdownMargin: 2,
+                                          onOptionRemoved: (index, option) {
+                                            print('Removed: $option');
+                                          },
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            createGroup();
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text("Add group"),
+                                        ),
+                                      ],
+                                    );
                                   },
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    
-                                    createGroup();
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text("Add group"),
-                                ),
-                              ],
-                            );
+                                );
+                              }
+                            });
                           },
-                        );
-                      }
-                    });
-                  },
-                  dropdownMenuEntries: [
-                    ...widget.groups
-                    .map((item) =>
-                        DropdownMenuEntry(label: item.name, value: item))
-                    .toList(),
-                    DropdownMenuEntry(
-                      label: 'Add Group',
-                      value: 'add_group',
-                    ),
-                  ]
-                ))),
+                          dropdownMenuEntries: [
+                        ...widget.groups
+                            .map((item) => DropdownMenuEntry(
+                                label: item.name, value: item))
+                            .toList(),
+                        DropdownMenuEntry(
+                          label: 'Add Group',
+                          value: 'add_group',
+                        ),
+                      ]))),
+              SizedBox(height: 150)
             ],
           ),
         ),
@@ -316,8 +332,18 @@ List<Person?> selectedPersons =[];
           backgroundColor: const Color(Colours.PRIMARY),
           onPressed: () {
             // Convert selected start and end times into DateTime objects for comparison
-            DateTime startDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedStartTime.hour, selectedStartTime.minute);
-            DateTime endDateTime = DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedEndTime.hour, selectedEndTime.minute);
+            DateTime startDateTime = DateTime(
+                selectedDate.year,
+                selectedDate.month,
+                selectedDate.day,
+                selectedStartTime.hour,
+                selectedStartTime.minute);
+            DateTime endDateTime = DateTime(
+                selectedDate.year,
+                selectedDate.month,
+                selectedDate.day,
+                selectedEndTime.hour,
+                selectedEndTime.minute);
             //check whether endTime is later than startTime
             if (startDateTime.isAfter(endDateTime)) {
               showDialog(
@@ -325,7 +351,8 @@ List<Person?> selectedPersons =[];
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text('Invalid Time'),
-                    content: Text('Start time cannot be later than end time. Please choose valid times.'),
+                    content: Text(
+                        'Start time cannot be later than end time. Please choose valid times.'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () {
@@ -337,21 +364,22 @@ List<Person?> selectedPersons =[];
                   );
                 },
               );
-            }
-            else{
+            } else {
               //createGroup();
-                  Navigator.pop(
-                      context,
-                      Itinerary(
-                          date: "${selectedDate.toLocal()}".split(' ')[0],
-                          activity: activityController.text,
-                          startTime: "${selectedStartTime.hourOfPeriod}:${selectedStartTime.minute.toString().padLeft(2, '0')} ${getAmPm(selectedStartTime)}",
-                          endTime: "${selectedEndTime.hourOfPeriod}:${selectedEndTime.minute.toString().padLeft(2, '0')} ${getAmPm(selectedEndTime)}",
-                          people: (selectedGroup as Group).people.map((person) {
-                            return person.id;
-                          }).toList(),
-                          creator: globalUser.id,
-                          group: (selectedGroup as Group).id));
+              Navigator.pop(
+                  context,
+                  Itinerary(
+                      date: "${selectedDate.toLocal()}".split(' ')[0],
+                      activity: activityController.text,
+                      startTime:
+                          "${selectedStartTime.hourOfPeriod}:${selectedStartTime.minute.toString().padLeft(2, '0')} ${getAmPm(selectedStartTime)}",
+                      endTime:
+                          "${selectedEndTime.hourOfPeriod}:${selectedEndTime.minute.toString().padLeft(2, '0')} ${getAmPm(selectedEndTime)}",
+                      people: (selectedGroup as Group).people.map((person) {
+                        return person.id;
+                      }).toList(),
+                      creator: globalUser.id,
+                      group: (selectedGroup as Group).id));
             }
           },
           // icon: const Icon(Icons.edit, color: Color(Colours.WHITECONTRAST)),

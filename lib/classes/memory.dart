@@ -1,7 +1,7 @@
 import 'package:test_app/classes/people.dart';
 
 class Memory {
-  const Memory(
+  Memory(
       {this.date = "2000-01-01",
       this.mainImage = "images/placeholder.png",
       this.images = const [],
@@ -10,7 +10,10 @@ class Memory {
       this.comments = "",
       this.creator,
       this.people = const [],
+      this.saved = false,
+      required this.docid,
       required this.group});
+  final String docid;
   final String date;
   final String mainImage;
   final List<dynamic> images;
@@ -20,9 +23,11 @@ class Memory {
   final List<dynamic> people;
   final String? creator;
   final String group;
+  bool saved;
 
   factory Memory.fromMap(Map<String, dynamic> data) {
     return Memory(
+        docid: data['docid'],
         date: data['date'],
         mainImage: data['mainImage'],
         images: data['images'],
@@ -31,6 +36,7 @@ class Memory {
         comments: data['comments'],
         people: data['people'],
         group: data['group'],
+        saved: data.containsKey('saved') ? data['saved'] : false,
         creator: data['creator']);
   }
 }

@@ -11,9 +11,13 @@ Future<Uint8List?> getDownloadURL(key) => storageRef.child(key).getData();
 
 class MemoryTile extends StatelessWidget {
   const MemoryTile(
-      {super.key, this.memory = const Memory(group: ""), this.fontSize = 12});
+      {super.key,
+      required this.memory,
+      this.fontSize = 12,
+      required this.updateMemories});
   final Memory memory;
   final double fontSize;
+  final VoidCallback updateMemories;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +32,7 @@ class MemoryTile extends StatelessWidget {
                     MaterialPageRoute(
                         builder: (context) =>
                             ViewMemoryScreen(memory: memory)));
+                updateMemories();
               },
               child: Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20),

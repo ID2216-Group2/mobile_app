@@ -30,7 +30,6 @@ class MemoriesScreenState extends State<MemoriesScreen> {
     super.initState();
 
     FirebaseUtils.fetchMemoriesByGroupId(globalGroup).then((fetchedMemories) {
-      print(fetchedMemories);
       setState(() {
         data = fetchedMemories;
       });
@@ -43,6 +42,14 @@ class MemoriesScreenState extends State<MemoriesScreen> {
         print(globalUser.id);
         groups = fetchedGroups;
         hasLoaded = true;
+      });
+    });
+  }
+
+  void updateMemories() {
+    FirebaseUtils.fetchMemoriesByGroupId(globalGroup).then((fetchedMemories) {
+      setState(() {
+        data = fetchedMemories;
       });
     });
   }
@@ -107,7 +114,9 @@ class MemoriesScreenState extends State<MemoriesScreen> {
                     ),
                     itemCount: memories.length,
                     itemBuilder: (context, gridIndex) {
-                      return MemoryTile(memory: memories[gridIndex]);
+                      return MemoryTile(
+                          memory: memories[gridIndex],
+                          updateMemories: updateMemories);
                     },
                   ),
                 ],
@@ -139,7 +148,8 @@ class MemoriesScreenState extends State<MemoriesScreen> {
                 "comments": result.comments,
                 "creator": result.creator,
                 "people": result.people,
-                "group": globalGroup
+                "group": globalGroup,
+                "saved": result.saved
               }).then((_) {
                 FirebaseUtils.fetchMemoriesByGroupId(globalGroup)
                     .then((fetchedMemories) {

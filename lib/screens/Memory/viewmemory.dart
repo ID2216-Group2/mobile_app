@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:test_app/classes/memory.dart';
 import 'package:test_app/constants/colours.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:test_app/utility/firebaseutils.dart';
 
 final storageRef = FirebaseStorage.instance.ref();
 
@@ -49,10 +50,13 @@ class ViewMemoryScreenState extends State<ViewMemoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(
-                left: 20.0, right: 20.0, bottom: 15.0, top: 15.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
             child: Text(widget.memory.title,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500)),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: SaveWidget(memory: widget.memory),
           ),
           ImageCard(image: widget.memory.images[0], width: 500, height: 200),
           const Padding(
@@ -72,7 +76,7 @@ class ViewMemoryScreenState extends State<ViewMemoryScreen> {
             physics: NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: _calculateCrossAxisCount(context),
-              crossAxisSpacing: 4,
+              crossAxisSpacing: 2,
             ),
             itemCount: widget.memory.images.length,
             itemBuilder: (context, gridIndex) {
@@ -88,7 +92,7 @@ class ViewMemoryScreenState extends State<ViewMemoryScreen> {
 
 class ImageCard extends StatelessWidget {
   const ImageCard(
-      {super.key, required this.image, this.width = 200, this.height = 100});
+      {super.key, required this.image, this.width = 200, this.height = 150});
   final String image;
   final double width;
   final double height;
@@ -100,7 +104,7 @@ class ImageCard extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
+              padding: const EdgeInsets.only(left: 10, right: 10),
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -122,5 +126,44 @@ class ImageCard extends StatelessWidget {
             );
           }
         });
+  }
+}
+
+class SaveWidget extends StatefulWidget {
+  final Memory memory;
+
+  SaveWidget({required this.memory});
+  @override
+  SaveWidgetState createState() => SaveWidgetState();
+}
+
+class SaveWidgetState extends State<SaveWidget> {
+  // Initial state of the icon
+  bool isSolid = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize isSolid with the value from memory, if it exists; otherwise, false
+    isSolid = widget.memory.saved;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(
+        isSolid ? Icons.bookmark : Icons.bookmark_outline,
+      ),
+      onPressed: () {
+        // Toggle icon state
+        setState(() {
+          isSolid = !isSolid;
+        });
+        // Simulate sending a request
+        FirebaseUtils.updateMemorySaved(widget.memory.docid, isSolid);
+        print("SENDING ${widget.memory.docid}");
+        print(isSolid);
+      },
+    );
   }
 }

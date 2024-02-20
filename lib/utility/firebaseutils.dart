@@ -54,7 +54,6 @@ class FirebaseUtils {
 
         // Assuming you have an Expenditure class that takes a Map<String, dynamic> in its constructor
         Expenditure expenditure = Expenditure.fromMap(data);
-        print(expenditure);
         expenditures.add(expenditure);
       }
     } catch (e) {
@@ -78,7 +77,9 @@ class FirebaseUtils {
               isEqualTo: groupId) // Assuming 'group' is the field name
           .get();
       for (var doc in querySnapshot.docs) {
+        String documentId = doc.id;
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['docid'] = documentId;
 
         // Assuming you have an Expenditure class that takes a Map<String, dynamic> in its constructor
         Memory memory = Memory.fromMap(data);
@@ -284,5 +285,13 @@ class FirebaseUtils {
     groupData['id'] = groupDoc.id;
     groupData['people'] = people;
     return Group.fromMap(groupData);
+
+  static Future<void> updateMemorySaved(String memoryId, bool saved) async {
+    DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+        .collection('memory')
+        .doc(memoryId)
+        .get();
+    groupDoc.reference.update({"saved": saved});
+
   }
 }
