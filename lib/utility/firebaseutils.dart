@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:test_app/classes/expenditure.dart';
 import 'package:test_app/classes/itinerary.dart';
 import 'package:test_app/classes/memory.dart';
 import 'package:test_app/classes/people.dart';
 import 'package:test_app/classes/group.dart';
+import 'package:test_app/utility/dateutils.dart';
 
 class FirebaseUtils {
   static Future<void> uploadData(collectionName, data) async {
@@ -154,7 +154,6 @@ class FirebaseUtils {
         people.add(p);
       }
       groupData['id'] = groupDoc.id;
-      groupData['name'] = groupData['groupname'];
       groupData['people'] = people;
       groups.add(Group.fromMap(groupData));
     }
@@ -250,11 +249,49 @@ class FirebaseUtils {
     return itineraries;
   }
 
+  static Future<List<Itinerary>> fetchTodayItinerariesByUserId(String userId) async {
+    List<Itinerary> itineraries = [];
+    try {
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('itinerary')
+        .where('people', arrayContains: userId)
+        .where('date', isEqualTo: getTodayDate())
+        .get();
+
+      for (var doc in querySnapshot.docs) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        Itinerary itinerary = Itinerary.fromMap(data);
+        itineraries.add(itinerary);
+      }
+    } catch (e, stacktrace) {
+      print("Error fetching expenditures: $e");
+      print(stacktrace);
+    }
+
+    itineraries.sort((a, b) => compareTime(a.startTime, b.startTime));
+    return itineraries;
+  }
+
+  static Future<Group> fetchGroupByGroupId(String groupId) async {
+    DocumentSnapshot groupDoc =
+      await FirebaseFirestore.instance.collection('group').doc(groupId).get();
+    Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
+    List<dynamic> peopleIds = groupData['people'];
+    List<Person> people = [];
+    for (String personId in peopleIds) {
+      Person p = await fetchUserByUserId(personId);
+      people.add(p);
+    }
+    groupData['id'] = groupDoc.id;
+    groupData['people'] = people;
+    return Group.fromMap(groupData);
+
   static Future<void> updateMemorySaved(String memoryId, bool saved) async {
     DocumentSnapshot groupDoc = await FirebaseFirestore.instance
         .collection('memory')
         .doc(memoryId)
         .get();
     groupDoc.reference.update({"saved": saved});
+
   }
 }

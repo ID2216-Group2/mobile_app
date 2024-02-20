@@ -120,7 +120,7 @@ class CreateItineraryState extends State<CreateItinerary> {
     // Create a new document in the "groups" collection with selected users
     FirebaseFirestore.instance.collection('group').add({
       'bill': billsJson,
-      'groupname': groupName,
+      'name': groupName,
       'people': selectedPeopleID,
     }).then((value) {
       // Group created successfully

@@ -38,8 +38,6 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
     });
     FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
         .then((fetchedGroups) {
-      print(fetchedGroups);
-      print(globalUser.id);
       setState(() {
         groups = fetchedGroups;
         hasLoaded = true;

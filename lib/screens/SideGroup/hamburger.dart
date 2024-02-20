@@ -3,6 +3,7 @@ import 'package:test_app/classes/people.dart';
 import 'package:test_app/classes/group.dart';
 import 'package:test_app/constants/colours.dart';
 import 'package:test_app/constants/paddings.dart';
+import 'package:test_app/screens/Login/login_screen.dart';
 import 'package:test_app/utility/firebaseutils.dart';
 import 'package:test_app/utility/globals.dart';
 import 'package:test_app/screens/SideGroup/components/dropdownlist.dart';
@@ -24,21 +25,19 @@ class SideGroupState extends State<SideGroup> {
   void initState() {
     super.initState();
 
-    FirebaseUtils.fetchUserByUserId(globalUser.id)
-      .then((user) {
-        setState(() {
-          currentUser = user;
-          userHasLoaded = true;
-        });
+    FirebaseUtils.fetchUserByUserId(globalUser.id).then((user) {
+      setState(() {
+        currentUser = user;
+        userHasLoaded = true;
       });
-    
-    FirebaseUtils.fetchGroupsByUserId(globalUser.id, true)
-      .then((groups) {
-        setState(() {
-          userGroups = groups;
-          groupsHasLoaded = true;
-        });
+    });
+
+    FirebaseUtils.fetchGroupsByUserId(globalUser.id, true).then((groups) {
+      setState(() {
+        userGroups = groups;
+        groupsHasLoaded = true;
       });
+    });
   }
 
   @override
@@ -62,7 +61,25 @@ class SideGroupState extends State<SideGroup> {
                       color: Color(Colours.SECONDARY),
                     ),
                     accountName: Text(currentUser.name),
-                    accountEmail: Text(currentUser.email),
+                    accountEmail: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(currentUser.email),
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => LoginScreen()
+                              ));
+                            },
+                            child: const Row(
+                              children: [
+                                Icon(Icons.logout),
+                                Text("Logout"),
+                                SizedBox(width: 10),
+                              ],
+                            ),
+                          )
+                        ]),
                     currentAccountPicture: const CircleAvatar(
                       child: ClipOval(),
                     ),
@@ -79,16 +96,18 @@ class SideGroupState extends State<SideGroup> {
                       ),
                     ),
                   ),
-                  groupsHasLoaded ?
-                    DropdownList(
-                      groups: userGroups, 
-                      expandedIndex: List.generate(userGroups.length, (_) => false, growable: false),
-                    )
-                  : const SizedBox(
-                    width: 54,
-                    height: 54,
-                    child: Center(child: CircularProgressIndicator()),
-                  )
+                  groupsHasLoaded
+                      ? DropdownList(
+                          groups: userGroups,
+                          expandedIndex: List.generate(
+                              userGroups.length, (_) => false,
+                              growable: false),
+                        )
+                      : const SizedBox(
+                          width: 54,
+                          height: 54,
+                          child: Center(child: CircularProgressIndicator()),
+                        )
                 ],
               ),
             ),
@@ -109,25 +128,24 @@ class SideGroupState extends State<SideGroup> {
                 ),
                 onPressed: () async {
                   final Group? newGroup = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CreateGroup())
-                  );
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CreateGroup()));
 
                   if (newGroup != null) {
                     setState(() {
                       groupsHasLoaded = false;
                     });
                     FirebaseUtils.uploadData("group", newGroup.toDbObject())
-                      .then((_) {
-                        FirebaseUtils.fetchGroupsByUserId(globalUser.id, true)
+                        .then((_) {
+                      FirebaseUtils.fetchGroupsByUserId(globalUser.id, true)
                           .then((groups) {
-                            setState(() {
-                              userGroups = groups;
-                              groupsHasLoaded = true;
-                            });
-                          });
+                        setState(() {
+                          userGroups = groups;
+                          groupsHasLoaded = true;
+                        });
                       });
+                    });
                   }
                 },
               ),

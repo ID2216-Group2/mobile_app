@@ -11,10 +11,22 @@ class CreateExpenditureState extends State<CreateExpenditure> {
   String? selectedCategory = CategoryName.none;
   double? selectedAmount = 0.0;
   Group? selectedGroup;
-  final TextEditingController dateController = TextEditingController();
+  final TextEditingController dateController = TextEditingController(
+    text: "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}"
+  );
   final TextEditingController amountController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController groupController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.groups.length == 1) {
+      selectedGroup = widget.groups[0];
+      groupController.text = widget.groups[0].name;
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -151,10 +163,16 @@ class CreateExpenditureState extends State<CreateExpenditure> {
 }
 
 class CreateExpenditure extends StatefulWidget {
-  const CreateExpenditure(
-      {super.key, required this.groups, required this.creator});
+  const CreateExpenditure({
+    super.key, 
+    required this.groups, 
+    required this.creator,
+    this.title="",
+  });
   final List<Group> groups;
   final String creator;
+  final String title;
+
   @override
   State<CreateExpenditure> createState() => CreateExpenditureState();
 }

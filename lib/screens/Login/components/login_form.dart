@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:test_app/screens/home.dart';
+import 'package:test_app/screens/Home/home.dart';
 
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../constants/colours.dart';

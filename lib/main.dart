@@ -3,7 +3,7 @@ import 'screens/Expenditure/expenditure.dart';
 import 'screens/Memory/memories.dart';
 import 'screens/Itinerary/itinerary.dart';
 import 'screens/saved.dart';
-import 'screens/home.dart';
+import 'screens/Home/home.dart';
 import 'screens/signup.dart';
 import 'screens/SideGroup/hamburger.dart';
 import 'constants/destinations.dart';
