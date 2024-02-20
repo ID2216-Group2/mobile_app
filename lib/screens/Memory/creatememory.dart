@@ -22,7 +22,9 @@ class CreateMemoryState extends State<CreateMemory> {
       FirebaseStorage.instanceFor(bucket: "gs://kth-mobile-app.appspot.com")
           .ref();
 
-  final TextEditingController dateController = TextEditingController();
+  final TextEditingController dateController = TextEditingController(
+    text: "${DateTime.now().year}-${DateTime.now().month.toString().padLeft(2, '0')}-${DateTime.now().day.toString().padLeft(2, '0')}"
+  );
   final TextEditingController nameController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController commentsController = TextEditingController();
@@ -31,6 +33,21 @@ class CreateMemoryState extends State<CreateMemory> {
   List<Widget> imageSliders = [];
 
   final picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.groups.length == 1) {
+      selectedGroup = widget.groups[0];
+      groupController.text = widget.groups[0].name;
+    }
+
+    if (widget.activity != "") {
+      
+      nameController.text = widget.activity;
+    }
+  }
 
   Future getImage() async {
     final pickedFile = await picker.pickImage(
@@ -202,9 +219,10 @@ class CreateMemoryState extends State<CreateMemory> {
 }
 
 class CreateMemory extends StatefulWidget {
-  const CreateMemory({super.key, required this.groups, required this.creator});
+  const CreateMemory({super.key, required this.groups, required this.creator, this.activity=""});
   final List<Group> groups;
   final Person creator;
+  final String activity;
   @override
   State<CreateMemory> createState() => CreateMemoryState();
 }

@@ -38,7 +38,6 @@ class CreateItineraryState extends State<CreateItinerary> {
     if (!_usersFetched) {
       fetchAllUsers();
     }
-  
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -116,7 +115,7 @@ class CreateItineraryState extends State<CreateItinerary> {
     // Create a new document in the "groups" collection with selected users
     FirebaseFirestore.instance.collection('group').add({
       'bill': billsJson,
-      'groupname': groupName,
+      'name': groupName,
       'people': selectedPeopleID,
     }).then((value) {
       // Group created successfully

@@ -23,7 +23,7 @@ class Group {
 
   Map<String, dynamic> toDbObject() {
     return {
-      "groupname": name,
+      "name": name,
       "people": people.map((person) {
         return person.id;
       }).toList(),

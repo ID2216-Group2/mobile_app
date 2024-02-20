@@ -4,12 +4,12 @@ import 'package:test_app/classes/people.dart';
 
 class Itinerary {
   const Itinerary({
-    this.date = "2000-01-01",
     required this.group,
-    this.activity = "museum",
-    this.startTime = "4:20",
-    this.endTime = "6:20",
-    this.creator,
+    required this.creator,
+    this.date = "",
+    this.activity = "",
+    this.startTime = "",
+    this.endTime = "",
     this.people = const [],
   });
   final String date;
