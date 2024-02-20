@@ -22,45 +22,48 @@ class BillItem extends StatelessWidget {
             child: ClipOval(),
           ),
           const SizedBox(width: 20),
-          SizedBox(
-            width: MediaQuery.of(context).size.width * 0.5,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(otherUsername),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      const TextSpan(
-                        text: 'You ',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                      amountLent > 0
-                          ? const TextSpan(
-                              text: 'borrowed ',
-                              style: TextStyle(color: Colors.black),
-                            )
-                          : const TextSpan(
-                              text: 'lent ',
-                              style: TextStyle(color: Colors.black),
-                            ),
-                      amountLent > 0
-                          ? TextSpan(
-                              text: "\$${amountLent.toStringAsFixed(2)}",
-                              style: const TextStyle(color: Colors.red),
-                            )
-                          : TextSpan(
-                              text: "\$${amountLent.abs().toStringAsFixed(2)}",
-                              style: const TextStyle(color: Colors.green),
-                            ),
-                    ],
-                  ),
-                )
-              ],
-            )
+          Expanded(
+              // width: MediaQuery.of(context).size.width * 0.5,
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(otherUsername),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: 'You ',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    amountLent > 0
+                        ? const TextSpan(
+                            text: 'borrowed ',
+                            style: TextStyle(color: Colors.black),
+                          )
+                        : const TextSpan(
+                            text: 'lent ',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                    amountLent > 0
+                        ? TextSpan(
+                            text: "\$${amountLent.toStringAsFixed(2)}",
+                            style: const TextStyle(color: Colors.red),
+                          )
+                        : TextSpan(
+                            text: "\$${amountLent.abs().toStringAsFixed(2)}",
+                            style: const TextStyle(color: Colors.green),
+                          ),
+                  ],
+                ),
+              )
+            ],
+          )),
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: OutlinedButton(
+                onPressed: onPressed, child: const Text('Settle Up')),
           ),
-          OutlinedButton(onPressed: onPressed, child: const Text('Settle Up')),
         ]));
   }
 }

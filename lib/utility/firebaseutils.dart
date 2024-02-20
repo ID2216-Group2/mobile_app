@@ -25,7 +25,7 @@ class FirebaseUtils {
       return querySnapshot.docs;
     }).catchError((error) => print("Failed to retrieve data: $error"));
   }
-  
+
   static Future<dynamic> retrieveCollectionFiltered(
       collectionName, filterBy, filterTerm) async {
     CollectionReference col =
@@ -54,7 +54,6 @@ class FirebaseUtils {
 
         // Assuming you have an Expenditure class that takes a Map<String, dynamic> in its constructor
         Expenditure expenditure = Expenditure.fromMap(data);
-        print(expenditure);
         expenditures.add(expenditure);
       }
     } catch (e) {
@@ -78,7 +77,9 @@ class FirebaseUtils {
               isEqualTo: groupId) // Assuming 'group' is the field name
           .get();
       for (var doc in querySnapshot.docs) {
+        String documentId = doc.id;
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        data['docid'] = documentId;
 
         // Assuming you have an Expenditure class that takes a Map<String, dynamic> in its constructor
         Memory memory = Memory.fromMap(data);
@@ -124,30 +125,31 @@ class FirebaseUtils {
   }
 
   static Future<Person> fetchUserByUserId(String userId) async {
-    DocumentSnapshot personSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userId)
-        .get();
+    DocumentSnapshot personSnapshot =
+        await FirebaseFirestore.instance.collection('users').doc(userId).get();
     Map<String, dynamic> personData =
         personSnapshot.data() as Map<String, dynamic>;
     personData['id'] = userId;
     return Person.fromMap(personData);
   }
 
-  static Future<List<Group>> fetchGroupsByUserId(String userId, bool ignore_currentUser) async {
+  static Future<List<Group>> fetchGroupsByUserId(
+      String userId, bool ignore_currentUser) async {
     List<Group> groups = [];
 
     QuerySnapshot groupSnapshot = await FirebaseFirestore.instance
         .collection('group')
         .where('people', arrayContains: userId)
         .get();
-          
+
     for (QueryDocumentSnapshot groupDoc in groupSnapshot.docs) {
       Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
       List<dynamic> peopleIds = groupData['people'];
       List<Person> people = [];
       for (String personId in peopleIds) {
-        if (ignore_currentUser && personId == userId) { continue; }
+        if (ignore_currentUser && personId == userId) {
+          continue;
+        }
         Person p = await fetchUserByUserId(personId);
         people.add(p);
       }
@@ -164,10 +166,10 @@ class FirebaseUtils {
     List<Person> otherUsers = [];
 
     QuerySnapshot usersSnapshot = await FirebaseFirestore.instance
-      .collection('users')
-      .where(FieldPath.documentId, isNotEqualTo: userId)
-      .get();
-    
+        .collection('users')
+        .where(FieldPath.documentId, isNotEqualTo: userId)
+        .get();
+
     for (QueryDocumentSnapshot userDoc in usersSnapshot.docs) {
       Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
       Person user = Person(
@@ -183,45 +185,43 @@ class FirebaseUtils {
   }
 
   static Future<List<List<double>>> fetchBillsByGroupId(String groupId) async {
-    DocumentSnapshot groupDoc = await FirebaseFirestore.instance
-      .collection('group')
-      .doc(groupId)
-      .get();
+    DocumentSnapshot groupDoc =
+        await FirebaseFirestore.instance.collection('group').doc(groupId).get();
     Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
     List<List<double>> bills = Group.decodeBills(groupData['bill']);
     return bills;
   }
 
-  static Future<void> updateGroupExpenditure(String groupId, String payeeId, double amount) async {
-    DocumentSnapshot groupDoc = await FirebaseFirestore.instance
-      .collection('group')
-      .doc(groupId)
-      .get();
+  static Future<void> updateGroupExpenditure(
+      String groupId, String payeeId, double amount) async {
+    DocumentSnapshot groupDoc =
+        await FirebaseFirestore.instance.collection('group').doc(groupId).get();
     Map<String, dynamic> groupData = groupDoc.data() as Map<String, dynamic>;
     List<dynamic> peopleIds = groupData['people'];
     List<List<double>> bills = Group.decodeBills(groupData['bill']);
     double amountOwed = amount / peopleIds.length;
     int payeeIdx = peopleIds.indexOf(payeeId);
-    
+
     for (var i = 0; i < peopleIds.length; i++) {
-      if (i == payeeIdx) { continue; }
+      if (i == payeeIdx) {
+        continue;
+      }
       bills[payeeIdx][i] += amountOwed;
     }
 
     String billsStr = Group.encodeBills(bills);
-    groupDoc.reference.update({ "bill": billsStr });
+    groupDoc.reference.update({"bill": billsStr});
   }
 
-  static Future<void> updateGroupBills(String groupId, List<List<double>> billMatrix) async {
-    DocumentSnapshot groupDoc = await FirebaseFirestore.instance
-      .collection('group')
-      .doc(groupId)
-      .get();
+  static Future<void> updateGroupBills(
+      String groupId, List<List<double>> billMatrix) async {
+    DocumentSnapshot groupDoc =
+        await FirebaseFirestore.instance.collection('group').doc(groupId).get();
     String billsStr = Group.encodeBills(billMatrix);
-    groupDoc.reference.update({ "bill": billsStr });
+    groupDoc.reference.update({"bill": billsStr});
   }
 
-   static Future<List<Itinerary>> fetchItinerariesByGroupId(
+  static Future<List<Itinerary>> fetchItinerariesByGroupId(
       String groupId) async {
     List<Itinerary> itineraries = [];
 
@@ -235,7 +235,7 @@ class FirebaseUtils {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
         // Assuming you have an Expenditure class that takes a Map<String, dynamic> in its constructor
-        
+
         Itinerary itinerary = Itinerary.fromMap(data);
         itineraries.add(itinerary);
       }
@@ -250,5 +250,11 @@ class FirebaseUtils {
     return itineraries;
   }
 
-  
+  static Future<void> updateMemorySaved(String memoryId, bool saved) async {
+    DocumentSnapshot groupDoc = await FirebaseFirestore.instance
+        .collection('memory')
+        .doc(memoryId)
+        .get();
+    groupDoc.reference.update({"saved": saved});
+  }
 }

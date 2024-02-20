@@ -55,13 +55,11 @@ class SettleUpState extends State<SettleUpScreen> {
                           if (people[i].id == globalUser.id) {
                             continue;
                           }
-                          double amountLent = billMatrix[i][currentUserIdx] - 
-                            billMatrix[currentUserIdx][i];
+                          double amountLent = billMatrix[i][currentUserIdx] -
+                              billMatrix[currentUserIdx][i];
                           if (amountLent != 0) {
-                            bills.add(
-                              Bill(
-                                people[i].name, i, currentUserIdx, amountLent
-                              ));
+                            bills.add(Bill(
+                                people[i].name, i, currentUserIdx, amountLent));
                           }
                         }
                       });
@@ -80,9 +78,12 @@ class SettleUpState extends State<SettleUpScreen> {
                       amountLent: bills[index].amount,
                       onPressed: () {
                         setState(() {
-                          billMatrix[bills[index].userIdx][bills[index].otherUserIdx] = 0;
-                          billMatrix[bills[index].otherUserIdx][bills[index].userIdx] = 0;
-                          FirebaseUtils.updateGroupBills(selectedGroup!.id, billMatrix);
+                          billMatrix[bills[index].userIdx]
+                              [bills[index].otherUserIdx] = 0;
+                          billMatrix[bills[index].otherUserIdx]
+                              [bills[index].userIdx] = 0;
+                          FirebaseUtils.updateGroupBills(
+                              selectedGroup!.id, billMatrix);
                           bills.removeAt(index);
                         });
                       },
