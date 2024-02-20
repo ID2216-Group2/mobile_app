@@ -84,7 +84,8 @@ class ImagePickerCard extends StatelessWidget {
                 ),
               ),
               onPressed: getImage,
-              child: Text('Add an image'),
+              child: Text('Add an image',
+                  style: TextStyle(color: Color(Colours.WHITECONTRAST))),
             ),
             imageList.isNotEmpty
                 ? CarouselSlider(

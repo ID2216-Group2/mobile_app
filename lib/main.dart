@@ -105,7 +105,7 @@ class _MainPageState extends State<MainPage> {
           // You can add more widgets here
         ],
       ),
-      
+
       drawer: SideGroup(),
 
       // appBar: AppBar(

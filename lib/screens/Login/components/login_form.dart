@@ -30,7 +30,8 @@ class _LoginFormState extends State<LoginForm> {
     String password = _passwordController.text.trim();
 
     // Perform a query to check if the provided email and password match a user in Firestore
-    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
         .collection('users')
         .where('email', isEqualTo: email)
         .where('password', isEqualTo: password)
@@ -44,7 +45,7 @@ class _LoginFormState extends State<LoginForm> {
         context,
         MaterialPageRoute(
           builder: (context) => const MainPage(title: 'Flutter Demo Home Page'),
-        ),    
+        ),
       );
     } else {
       // Authentication failed, display an error message
@@ -62,8 +63,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
               ],
             );
-          }
-      );
+          });
     }
   }
 

@@ -35,8 +35,11 @@ class MemoriesScreenState extends State<MemoriesScreen> {
       });
     });
 
-    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false).then((fetchedGroups) {
+    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
+        .then((fetchedGroups) {
       setState(() {
+        print(fetchedGroups);
+        print(globalUser.id);
         groups = fetchedGroups;
         hasLoaded = true;
       });

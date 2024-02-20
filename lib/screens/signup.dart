@@ -29,15 +29,14 @@ class SignupState extends State<Signup> {
             ),
           ),
           inputDecorationTheme: const InputDecorationTheme(
-            filled: true,
-            fillColor: Color(Colours.SECONDARY),
+            filled: false,
+            // fillColor: Color(Colours.SECONDARY),
             iconColor: Color(Colours.PRIMARY),
             prefixIconColor: Color(Colours.PRIMARY),
             contentPadding: EdgeInsets.symmetric(
                 horizontal: defaultPadding, vertical: defaultPadding),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(30)),
-              borderSide: BorderSide.none,
             ),
           )),
       home: const WelcomeScreen(),

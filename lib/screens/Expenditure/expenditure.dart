@@ -35,7 +35,10 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
         expenditures = fetchedExpenditures;
       });
     });
-    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false).then((fetchedGroups) {
+    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
+        .then((fetchedGroups) {
+      print(fetchedGroups);
+      print(globalUser.id);
       setState(() {
         groups = fetchedGroups;
         hasLoaded = true;
@@ -74,67 +77,73 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
               heroTag: 'settle-up-button',
               elevation: 12.0,
               backgroundColor: const Color(Colours.PRIMARY),
-              onPressed: !hasLoaded ? null : () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SettleUpScreen(
-                            groups: groups,
-                          )),
-                );
-              },
+              onPressed: !hasLoaded
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SettleUpScreen(
+                                  groups: groups,
+                                )),
+                      );
+                    },
               icon:
                   const Icon(Icons.check, color: Color(Colours.WHITECONTRAST)),
               label: const Text("Settle Up",
                   style: TextStyle(color: Color(Colours.WHITECONTRAST))),
             ),
-            SizedBox(width: 80),
+            SizedBox(width: 30),
             FloatingActionButton.extended(
               heroTag: 'add-expenditure-button',
               elevation: 12.0,
               backgroundColor: const Color(Colours.PRIMARY),
-              onPressed: !hasLoaded ? null : () async {
-                final Expenditure? result = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => CreateExpenditure(
-                            groups: groups,
-                            creator: globalUser.id,
-                          )),
-                );
-                if (result != null) {
-                  setState(() => expenditures.add(result));
-                  FirebaseUtils.uploadData("expenditure", {
-                    "date": result.date,
-                    "category": result.category,
-                    "amount": result.amount,
-                    "creator": globalUser.id,
-                    "people": result.people,
-                    "group": globalGroup
-                  }).then((_) {
-                    // Fetch the latest data again after adding a new expenditure
-                    FirebaseUtils.fetchExpendituresByGroupId(globalGroup)
-                        .then((fetchedExpenditures) {
-                      setState(() {
-                        expenditures = fetchedExpenditures;
-                      });
-                    });
+              onPressed: !hasLoaded
+                  ? null
+                  : () async {
+                      final Expenditure? result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CreateExpenditure(
+                                  groups: groups,
+                                  creator: globalUser.id,
+                                )),
+                      );
+                      if (result != null) {
+                        setState(() => expenditures.add(result));
+                        FirebaseUtils.uploadData("expenditure", {
+                          "date": result.date,
+                          "category": result.category,
+                          "amount": result.amount,
+                          "creator": globalUser.id,
+                          "people": result.people,
+                          "group": globalGroup
+                        }).then((_) {
+                          // Fetch the latest data again after adding a new expenditure
+                          FirebaseUtils.fetchExpendituresByGroupId(globalGroup)
+                              .then((fetchedExpenditures) {
+                            setState(() {
+                              expenditures = fetchedExpenditures;
+                            });
+                          });
 
-                    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false).then((fetchedGroups) {
-                      setState(() {
-                        groups = fetchedGroups;
-                        hasLoaded = true;
-                      });
-                    });
-                  });
+                          FirebaseUtils.fetchGroupsByUserId(
+                                  globalUser.id, false)
+                              .then((fetchedGroups) {
+                            setState(() {
+                              groups = fetchedGroups;
+                              hasLoaded = true;
+                            });
+                          });
+                        });
 
-                  String groupId = result.group;
-                  await FirebaseUtils.updateGroupExpenditure(
-                      groupId, globalUser.id, result.amount);
-                } else {
-                  print("NO");
-                }
-              },
+                        String groupId = result.group;
+                        await FirebaseUtils.updateGroupExpenditure(
+                            groupId, globalUser.id, result.amount);
+                      } else {
+                        print("NO");
+                      }
+                    },
               icon: const Icon(Icons.edit, color: Color(Colours.WHITECONTRAST)),
               label: const Text("Add Expenditure",
                   style: TextStyle(color: Color(Colours.WHITECONTRAST))),
