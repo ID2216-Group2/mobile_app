@@ -35,12 +35,12 @@ class ExpenditureBlock extends StatelessWidget {
           ),
           ...group.map(
             (expenditure) => ExpenditureTile(
-              amount: expenditure.creator == globalUser
+              amount: expenditure.creator == globalUser.id
                   ? expenditure.amount / expenditure.people.length * (expenditure.people.length - 1)
                   : expenditure.amount / expenditure.people.length,
               icon: expenditure.icon,
               category: expenditure.category,
-              type: expenditure.creator == globalUser
+              type: expenditure.creator == globalUser.id
                   ? "lent"
                   : "borrowed",
             ),

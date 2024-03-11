@@ -24,6 +24,7 @@ class ItineraryScreenState extends State<ItineraryScreen> {
   List<Itinerary> itineraries = [];
   Map<String, List<Itinerary>> groupedData = {};
   bool hasLoaded = false;
+  Group? currentGroup;
 
   @override
   void initState() {
@@ -36,6 +37,13 @@ class ItineraryScreenState extends State<ItineraryScreen> {
           itineraries = fetchedItineraries;
         });
       });
+
+      FirebaseUtils.fetchGroupByGroupId(globalGroup)
+        .then((fetchedGroup) {
+          setState(() {
+            currentGroup = fetchedGroup;
+          });
+        });
     }
     FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
         .then((fetchedGroups) {
@@ -95,7 +103,7 @@ class ItineraryScreenState extends State<ItineraryScreen> {
         body: SingleChildScrollView(
           padding: EdgeInsets.only(bottom: 100),
           child: Column(children: <Widget>[
-            const CustomCard(),
+            currentGroup != null ? CustomCard(title: (currentGroup as Group).name) : const CustomCard(),
             Column(
               children: sortedGroupedData.entries
                   .map((e) => ItineraryBlock(day: e.key, group: e.value))

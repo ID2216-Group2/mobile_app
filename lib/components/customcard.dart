@@ -4,7 +4,7 @@ class CustomCard extends StatelessWidget {
   const CustomCard(
       {super.key,
       this.image = "images/placeholder.png",
-      this.title = "The bois",
+      this.title = "placeholder",
       this.fontSize = 25});
   final String image;
   final String title;

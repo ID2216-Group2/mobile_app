@@ -11,6 +11,7 @@ import 'package:test_app/utility/firebaseutils.dart';
 class CreateGroupState extends State<CreateGroup> {
   List<Person> persons = [];
   List<Person> _otherUsers = [];
+  Person? currentUser;
   final TextEditingController nameController = TextEditingController();
   final MultiSelectController<Person> groupController = MultiSelectController();
 
@@ -29,9 +30,9 @@ class CreateGroupState extends State<CreateGroup> {
   }
 
   Future<void> _setCurrentUser() async {
-    Person currentUser = await FirebaseUtils.fetchUserByUserId(globalUser.id);
+    Person currentUser_ = await FirebaseUtils.fetchUserByUserId(globalUser.id);
     setState(() {
-      persons = [currentUser];
+      currentUser = currentUser_;
     });
   }
 
@@ -39,7 +40,7 @@ class CreateGroupState extends State<CreateGroup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add an Expenditure'),
+        title: const Text('Add a new group'),
         backgroundColor: const Color(Colours.SECONDARY),
       ),
       body: Center(
@@ -74,7 +75,7 @@ class CreateGroupState extends State<CreateGroup> {
                       controller: groupController,
                       onOptionSelected: (options) {
                         setState(() {
-                          persons = persons + options
+                          persons = [currentUser].cast<Person>() + options
                               .toList()
                               .map((item) => item.value)
                               .toList()

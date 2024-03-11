@@ -23,6 +23,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
   Map<String, List<Expenditure>> groupedData = {};
   bool hasLoaded = false;
   String? lastGlobalGroup;
+  Group? currentGroup;
 
   @override
   void initState() {
@@ -46,9 +47,16 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
           .then((fetchedExpenditures) {
         setState(() {
           expenditures = fetchedExpenditures;
-          lastGlobalGroup = globalGroup;  // Update lastGlobalGroup
+          lastGlobalGroup = globalGroup;
         });
       });
+
+      FirebaseUtils.fetchGroupByGroupId(globalGroup)
+        .then((fetchedGroup) {
+          setState(() {
+            currentGroup = fetchedGroup;
+          });
+        });
 
       FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
           .then((fetchedGroups) {
@@ -83,7 +91,7 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
         body: SingleChildScrollView(
           padding: EdgeInsets.only(bottom: 130),
           child: Column(children: <Widget>[
-            const CustomCard(),
+            currentGroup != null ? CustomCard(title: (currentGroup as Group).name) : const CustomCard(),
             Column(
               children: groupedData.entries
                   .map((e) => ExpenditureBlock(month: e.key, group: e.value))
