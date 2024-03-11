@@ -246,6 +246,7 @@ class FirebaseUtils {
       DateTime dateB = DateTime.parse(b.date);
       return dateA.compareTo(dateB);
     });
+    print(itineraries);
     return itineraries;
   }
 

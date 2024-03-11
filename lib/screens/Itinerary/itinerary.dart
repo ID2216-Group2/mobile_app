@@ -75,7 +75,7 @@ class ItineraryScreenState extends State<ItineraryScreen> {
     }
     groupedData = {};
     for (var entry in itineraries) {
-      DateTime date = DateTime.parse(entry.date);
+      DateTime date = DateTime.parse(entry.date).add(const Duration(days: 1));
       if (date.isAfter(DateTime.now()) ||
           date.isAtSameMomentAs(DateTime.now())) {
         String yearMonthDay = DateFormat('yyyy-MM-dd').format(date);
@@ -85,10 +85,12 @@ class ItineraryScreenState extends State<ItineraryScreen> {
         groupedData[yearMonthDay]!.add(entry);
       }
     }
-
+    
     for (var key in groupedData.keys) {
       groupedData[key]!.sort(compareItineraries);
     }
+
+    print(groupedData);
 
     // Now, if you want to sort groupedData keys based on date, you can create a list of keys and sort them
     List<String> sortedKeys = groupedData.keys.toList()
@@ -140,26 +142,14 @@ class ItineraryScreenState extends State<ItineraryScreen> {
                           "people": result.people,
                           "group": globalGroup
                         }).then((_) {
-                          // Fetch the latest data again after adding a new expenditure
+                          // Fetch the latest data again after adding a new itinerary
                           FirebaseUtils.fetchItinerariesByGroupId(globalGroup)
                               .then((fetchedItineraries) {
                             setState(() {
                               itineraries = fetchedItineraries;
                             });
                           });
-
-                          FirebaseUtils.fetchGroupsByUserId(
-                                  globalUser.id, false)
-                              .then((fetchedGroups) {
-                            setState(() {
-                              groups = fetchedGroups;
-                              hasLoaded = true;
-                            });
-                          });
                         });
-                        String groupId = result.group;
-                        // await FirebaseUtils.updateGroupItinerary(
-                        //     groupId, globalUser.id, result.amount);
                       } else {
                         print("NO");
                       }
