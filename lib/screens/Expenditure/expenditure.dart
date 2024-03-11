@@ -22,26 +22,42 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
   List<Expenditure> expenditures = [];
   Map<String, List<Expenditure>> groupedData = {};
   bool hasLoaded = false;
+  String? lastGlobalGroup;
 
   @override
   void initState() {
-    hasLoaded = false;
     super.initState();
+    _fetchData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Check if globalGroup has changed
+    if (globalGroup != lastGlobalGroup) {
+      _fetchData();  // Call _fetchData to update the UI with new group data
+    }
+  }
+
+  void _fetchData() {
     if (globalGroup != "NULL") {
+      hasLoaded = false;
       FirebaseUtils.fetchExpendituresByGroupId(globalGroup)
           .then((fetchedExpenditures) {
         setState(() {
           expenditures = fetchedExpenditures;
+          lastGlobalGroup = globalGroup;  // Update lastGlobalGroup
+        });
+      });
+
+      FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
+          .then((fetchedGroups) {
+        setState(() {
+          groups = fetchedGroups;
+          hasLoaded = true;
         });
       });
     }
-    FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
-        .then((fetchedGroups) {
-      setState(() {
-        groups = fetchedGroups;
-        hasLoaded = true;
-      });
-    });
   }
 
   @override

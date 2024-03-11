@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/classes/group.dart';
 import 'package:test_app/classes/people.dart';
+import 'package:test_app/constants/colours.dart';
+import 'package:test_app/utility/globals.dart';
 
 class DropdownList extends StatefulWidget {
-  const DropdownList({super.key, required this.groups, required this.expandedIndex});
+  const DropdownList(
+      {super.key, required this.groups, required this.expandedIndex});
 
   final List<Group> groups;
   final List<bool> expandedIndex;
@@ -37,12 +40,31 @@ class _DropdownListState extends State<DropdownList> {
             );
           },
           body: Column(
-            children: group.people.map<Widget>((Person person) {
-              return ListTile(
-                title: Text(person.name),
-                subtitle: Text(person.email),
-              );
-            }).toList(),
+            children: <Widget>[
+              ...group.people.map<Widget>((Person person) {
+                return ListTile(
+                  title: Text(person.name),
+                  subtitle: Text(person.email),
+                );
+              }).toList(),
+              Row(
+                children: [
+                  const SizedBox(width: 10,),
+                  FloatingActionButton.extended(
+                    elevation: 0,
+                    backgroundColor: const Color(Colours.PRIMARY),
+                    label: const Text("Set Active Group",
+                        style: TextStyle(color: Color(Colours.WHITECONTRAST))),
+                    onPressed: () {
+                      globalGroup = group.id;
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              )
+            ],
           ),
           isExpanded: widget.expandedIndex[index],
         );

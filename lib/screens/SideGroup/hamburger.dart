@@ -67,6 +67,7 @@ class SideGroupState extends State<SideGroup> {
                           Text(currentUser.email),
                           InkWell(
                             onTap: () {
+                              globalGroup = "NULL";
                               Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => LoginScreen()
                               ));
