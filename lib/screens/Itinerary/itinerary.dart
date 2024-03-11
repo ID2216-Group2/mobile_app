@@ -10,6 +10,7 @@ import 'package:test_app/screens/Itinerary/createitinerary.dart';
 import 'package:test_app/utility/firebaseutils.dart';
 import 'package:test_app/utility/globals.dart';
 import 'package:test_app/components/custom_fab.dart';
+import 'package:intl/intl.dart'; 
 
 const currentUser = SamplePeople.muthu;
 
@@ -75,7 +76,9 @@ class ItineraryScreenState extends State<ItineraryScreen> {
     }
     groupedData = {};
     for (var entry in itineraries) {
-      DateTime date = DateTime.parse(entry.date).add(const Duration(days: 1));
+      DateFormat format = DateFormat("h:mm a"); // "h" for hour, "mm" for minutes, "a" for AM/PM
+      DateTime startTime = format.parse(entry.startTime.toUpperCase());
+      DateTime date = DateTime.parse(entry.date).add(Duration(hours: startTime.hour, minutes: startTime.minute));
       if (date.isAfter(DateTime.now()) ||
           date.isAtSameMomentAs(DateTime.now())) {
         String yearMonthDay = DateFormat('yyyy-MM-dd').format(date);
@@ -85,7 +88,7 @@ class ItineraryScreenState extends State<ItineraryScreen> {
         groupedData[yearMonthDay]!.add(entry);
       }
     }
-    
+
     for (var key in groupedData.keys) {
       groupedData[key]!.sort(compareItineraries);
     }
