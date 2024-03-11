@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:test_app/classes/group.dart';
 import 'package:test_app/components/customcard.dart';
 import 'package:test_app/constants/colours.dart';
-import 'package:test_app/sampledata/people.dart';
 import 'package:test_app/classes/expenditure.dart';
 import 'package:test_app/screens/Expenditure/createexpenditure.dart';
 import 'package:test_app/components/expenditureblock.dart';
@@ -11,8 +10,6 @@ import 'package:test_app/screens/Expenditure/settleup.dart';
 import 'package:test_app/utility/firebaseutils.dart';
 import 'package:test_app/utility/globals.dart';
 import 'package:test_app/components/custom_fab.dart';
-
-const currentUser = SamplePeople.muthu;
 
 class ExpenditureScreen extends StatefulWidget {
   const ExpenditureScreen({super.key});
@@ -30,12 +27,14 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
   void initState() {
     hasLoaded = false;
     super.initState();
-    FirebaseUtils.fetchExpendituresByGroupId(globalGroup)
-        .then((fetchedExpenditures) {
-      setState(() {
-        expenditures = fetchedExpenditures;
+    if (globalGroup != "NULL") {
+      FirebaseUtils.fetchExpendituresByGroupId(globalGroup)
+          .then((fetchedExpenditures) {
+        setState(() {
+          expenditures = fetchedExpenditures;
+        });
       });
-    });
+    }
     FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
         .then((fetchedGroups) {
       setState(() {
@@ -47,6 +46,13 @@ class ExpenditureScreenState extends State<ExpenditureScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (globalGroup == "NULL") {
+      return const Scaffold(
+        body: Center(
+          child: Text("Please create and select a group\n"),
+        ),
+      );
+    }
     groupedData = {};
     for (var entry in expenditures) {
       DateTime date = DateTime.parse(entry.date);

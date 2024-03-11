@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:test_app/classes/people.dart';
 import 'package:test_app/screens/Home/home.dart';
+import 'package:test_app/utility/globals.dart';
 
 import '../../../components/already_have_an_account_acheck.dart';
 import '../../../constants/colours.dart';
@@ -39,6 +41,11 @@ class _LoginFormState extends State<LoginForm> {
 
     // Check if any matching user documents are found
     if (snapshot.docs.isNotEmpty) {
+      globalUser = Person(
+          id: snapshot.docs[0].id,
+          name: snapshot.docs[0].data()['name'],
+          email: email,
+          password: password);
       // Authentication successful, navigate to the home screen
       //return const MainPage(title: 'Flutter Demo Home Page');
       Navigator.pushReplacement(

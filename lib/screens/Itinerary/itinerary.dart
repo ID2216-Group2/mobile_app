@@ -29,12 +29,14 @@ class ItineraryScreenState extends State<ItineraryScreen> {
   void initState() {
     hasLoaded = false;
     super.initState();
-    FirebaseUtils.fetchItinerariesByGroupId(globalGroup)
-        .then((fetchedItineraries) {
-      setState(() {
-        itineraries = fetchedItineraries;
+    if (globalGroup != "NULL") {
+      FirebaseUtils.fetchItinerariesByGroupId(globalGroup)
+          .then((fetchedItineraries) {
+        setState(() {
+          itineraries = fetchedItineraries;
+        });
       });
-    });
+    }
     FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
         .then((fetchedGroups) {
       setState(() {
@@ -56,6 +58,13 @@ class ItineraryScreenState extends State<ItineraryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (globalGroup == "NULL") {
+      return const Scaffold(
+        body: Center(
+          child: Text("Please create and select a group\n"),
+        ),
+      );
+    }
     groupedData = {};
     for (var entry in itineraries) {
       DateTime date = DateTime.parse(entry.date);

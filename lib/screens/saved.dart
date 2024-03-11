@@ -25,18 +25,18 @@ class SavedScreenState extends State<SavedScreen> {
   void initState() {
     hasLoaded = false;
     super.initState();
-
-    FirebaseUtils.fetchMemoriesByGroupId(globalGroup).then((fetchedMemories) {
-      var filteredMemories = fetchedMemories.where((memory) {
-        // Replace this condition with whatever you need
-        // For example, to keep memories from 2021:
-        return memory.saved == true;
-      }).toList(); // Convert the iterable back to a List
-      setState(() {
-        data = filteredMemories;
+    if (globalGroup != "NULL") {
+      FirebaseUtils.fetchMemoriesByGroupId(globalGroup).then((fetchedMemories) {
+        var filteredMemories = fetchedMemories.where((memory) {
+          // Replace this condition with whatever you need
+          // For example, to keep memories from 2021:
+          return memory.saved == true;
+        }).toList(); // Convert the iterable back to a List
+        setState(() {
+          data = filteredMemories;
+        });
       });
-    });
-
+    }
     FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
         .then((fetchedGroups) {
       setState(() {
@@ -88,6 +88,13 @@ class SavedScreenState extends State<SavedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (globalGroup == "NULL") {
+      return const Scaffold(
+        body: Center(
+          child: Text("Please create and select a group\n"),
+        ),
+      );
+    }
     return Scaffold(
       body: ListView.builder(
         itemCount: _groupedData.length,

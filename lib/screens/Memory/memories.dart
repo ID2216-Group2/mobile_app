@@ -28,13 +28,13 @@ class MemoriesScreenState extends State<MemoriesScreen> {
   void initState() {
     hasLoaded = false;
     super.initState();
-
-    FirebaseUtils.fetchMemoriesByGroupId(globalGroup).then((fetchedMemories) {
-      setState(() {
-        data = fetchedMemories;
+    if (globalGroup != "NULL") {
+      FirebaseUtils.fetchMemoriesByGroupId(globalGroup).then((fetchedMemories) {
+        setState(() {
+          data = fetchedMemories;
+        });
       });
-    });
-
+    }
     FirebaseUtils.fetchGroupsByUserId(globalUser.id, false)
         .then((fetchedGroups) {
       setState(() {
@@ -81,6 +81,13 @@ class MemoriesScreenState extends State<MemoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (globalGroup == "NULL") {
+      return const Scaffold(
+        body: Center(
+          child: Text("Please create and select a group\n"),
+        ),
+      );
+    }
     return Scaffold(
         body: ListView.builder(
           itemCount: _groupedData.length,

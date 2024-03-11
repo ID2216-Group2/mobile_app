@@ -29,10 +29,13 @@ class LoginAndSignupBtn extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
-        const Text(
-          "New to Hangout?", 
-          style: TextStyle(fontWeight: FontWeight.w300),
-        ),                  
+        const Padding(
+          padding: EdgeInsets.only(bottom: 8.0),
+          child: Text(
+            "New to Hangout?",
+            style: TextStyle(fontWeight: FontWeight.w300),
+          ),
+        ),
         ElevatedButton(
           onPressed: () {
             Navigator.push(
